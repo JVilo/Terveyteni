@@ -1,3 +1,4 @@
+{% block content %}
 Viestien määrä: {{ count }}
 <hr>
 {% for message in messages %}
@@ -9,3 +10,7 @@ Viestien määrä: {{ count }}
 <hr>
 {% endfor %}
 <p>Uusi viesti</p>
+<a href="/newm">Uusi viesti</a>
+<br>
+<a href="http://127.0.0.1:5000/">Etusivulle</a>
+{% endblock %}

@@ -11,3 +11,5 @@ Sovelluksessa voi keskustella terveydenhuollon kanssa ja saada tehtäviä/määr
 - Ylläpitäjä voi lisätä ja poistaa keskustelualueita.
 - Ylläpitäjä voi luoda määräyksiä/tehtäviä.
 - Ylläpitäjä voi luoda salaisen alueen ja määrittää, keillä käyttäjillä on pääsy alueelle.
+
+Sovellukseen voi kirjautua sisään ja ulos sekä luoda uuden käyttäjän.

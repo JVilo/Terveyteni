@@ -54,16 +54,14 @@ def register():
             return render_template("error.html", message="Rekisteröinti ei onnistunut")
         return redirect("/")
 
-#@app.route("/stats")
-#def show_stats():
-    #users.require_role(2)
+@app.route("/messages")
+def show_mess_task():
+    list = messages.get_list()
+    return render_template("messages.html", count=len(list), messages=list)
 
-    #data = stats.get_full_stats(users.user_id())
-    #return render_template("stats.html", data=data)
-
-@app.route("/new")
+@app.route("/newm")
 def new():
-    return render_template("new.html")
+    return render_template("newm.html")
 
 @app.route("/send", methods=["POST"])
 def send():
