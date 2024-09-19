@@ -13,4 +13,7 @@ Sovelluksessa voi keskustella terveydenhuollon kanssa ja saada tehtäviä/määr
 - Ylläpitäjä voi luoda salaisen alueen ja määrittää, keillä käyttäjillä on pääsy alueelle.
 
 Sovellukseen voi kirjautua sisään ja ulos sekä luoda uuden käyttäjän.
+
 Voit tarkistella viestejä ja lähettää viestin.
+
+Käyttäjä voi poistaa omia viestejä.
