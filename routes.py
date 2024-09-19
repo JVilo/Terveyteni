@@ -2,6 +2,8 @@ from app import app
 from flask import render_template, request, redirect
 import users
 import messages
+#import choose
+import tasks
 
 
 @app.route("/")
@@ -45,17 +47,15 @@ def register():
             return render_template("error.html", message="Salasana on tyhjä")
         
         role = request.form["role"]
-        print(role)
         if role not in ("1", "2"):
             return render_template("error.html", message="Tuntematon käyttäjärooli")
 
         if not users.register(username, password1, role):
-            print(username,password1,role)
             return render_template("error.html", message="Rekisteröinti ei onnistunut")
         return redirect("/")
 
 @app.route("/messages")
-def show_mess_task():
+def show_mess():
     list = messages.get_list()
     return render_template("messages.html", count=len(list), messages=list)
 
@@ -70,3 +70,22 @@ def send():
         return redirect("/")
     else:
         return render_template("error.html", message="Viestin lähetys ei onnistunut")
+
+@app.route("/remove",methods=["get", "post"])
+def remove():
+
+    if request.method == "GET":
+        message = messages.get_my_message(users.user_id())
+        return render_template("remove.html", list= message)
+
+    if request.method == "POST":
+        users.check_csrf()
+
+        print("message" in request.form)
+        if "message" in request.form:
+            message = request.form["message"]
+            messages.remove_message(message, users.user_id())
+            
+        return redirect("/")
+    
+

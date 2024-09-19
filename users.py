@@ -8,8 +8,6 @@ def login(name, password):
     sql = "SELECT password, id, role FROM users WHERE name=:name"
     result = db.session.execute((text(sql)), {"name":name})
     user = result.fetchone()
-    print(result)
-    print(user)
     if not user:
         return False
     if not check_password_hash(user[0], password):
@@ -30,7 +28,7 @@ def register(name, password, role):
     try:
         sql = """INSERT INTO users (name, password, role)
                  VALUES (:name, :password, :role)"""
-        db.session.execute((text(sql)), {"name":name, "password":hash_value, "role":role})
+        db.session.execute((text(sql)), {"name":name, "password":hash_value, "role":role,})
         db.session.commit()
     except Exception as e:
         print(e)
