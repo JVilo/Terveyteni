@@ -12,9 +12,11 @@ Sovelluksessa voi keskustella terveydenhuollon kanssa ja saada tehtäviä/määr
 - Ylläpitäjä voi luoda määräyksiä/tehtäviä.
 - Ylläpitäjä voi luoda salaisen alueen ja määrittää, keillä käyttäjillä on pääsy alueelle.
 
+Tällähetkellä sovelluksessa toimii seuraavat asiat:
+
 Sovellukseen voi kirjautua sisään ja ulos sekä luoda uuden käyttäjän.
 
-Voit tarkistella viestejä ja lähettää viestin.
+Voit tarkistella viestejä ja lähettää viestin. Viestiketjulle on oma pohja, mutta sen jtkaminen ei vielä onnistu.
 
 Käyttäjät voi poistaa omia viestejä.
 
