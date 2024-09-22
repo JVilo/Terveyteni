@@ -2,12 +2,10 @@ from db import db
 from sqlalchemy.sql import text
 import users
 
-#def get_tasks(user_id):
-    
-    #sql_bmi = """SELECT b.id FROM BMI b
-             #WHERE  b.user_id=:user_id AND b.aktive = 1"""
-    # sql_RR = ...
-    #return db.session.execute((text(sql_bmi)), {"user_id":user_id}).fetchall()
+def get_bmi():
+    sql = """SELECT u.name, b.weight, b.height FROM bmi b, users u WHERE b.user_id=u.id ORDER BY u.id"""
+    result =db.session.execute((text(sql)))
+    return result.fetchall()
 
 
 def Bmi(weight, height):
@@ -22,7 +20,6 @@ def cal_bmi(user_id):
     sql = """SELECT b.weight, b.height FROM bmi b, users u 
              WHERE b.user_id=:user_id ORDER BY u.id"""
     result = db.session.execute((text(sql)), {"user_id":user_id})
-
     return result.fetchall()
 
 

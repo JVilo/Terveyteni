@@ -25,6 +25,7 @@ peapole = db.Table(
 messages = db.Table(
     "messages", md,
     Column("id", Integer, primary_key = True),
+    Column("title", String),
     Column("content", String),
     Column("user_id",ForeignKey("users.id"), nullable=False),
     Column("sent_at", TIMESTAMP),

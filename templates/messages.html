@@ -1,15 +1,19 @@
 {% block content %}
+
 Viestien määrä: {{ count }}
 <hr>
 {% for message in messages %}
-<i>Viesti:</i> {{ message[0] }}
+<i>Otsikko:</i>{{ message[0] }}
 <p>
-<i>Lähettäjä:</i> {{ message[1] }}
+<i>Viesti:</i> {{ message[1] }}
 <p>
-<i>Aika:</i> {{ message[2].strftime("%Y-%m-%d %H:%M:%S") }}
+<i>Lähettäjä:</i> {{ message[2] }}
+<p>
+<i>Aika:</i> {{ message[3].strftime("%Y-%m-%d %H:%M:%S") }}
 <hr>
+
 {% endfor %}
-<p>Uusi viesti</p>
+
 <a href="/newm">Uusi viesti</a>
 <br>
 <a href="http://127.0.0.1:5000/">Etusivulle</a>

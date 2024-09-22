@@ -64,8 +64,9 @@ def new():
 
 @app.route("/send", methods=["POST"])
 def send():
+    title = request.form["title"]
     content = request.form["content"]
-    if messages.send(content):
+    if messages.send(title,content):
         return redirect("/")
     else:
         return render_template("error.html", message="Viestin lähetys ei onnistunut")
@@ -90,7 +91,19 @@ def remove():
 def chose_task():
     users.require_role(2)
     if request.method == "GET":
-        return render_template("tasks.html")
+        data = tasks.get_bmi()
+        ls_bmi=[]
+        if len(data)>1:
+            for x in data:
+                name = x[0]
+                weight = x[1]
+                height = x[2]
+                bmi = round((weight / ((height / 100) ** 2)), 2)
+                ls_bmi.append((name,weight,height,bmi))
+            return render_template("tasks.html", data = ls_bmi,lst = len(ls_bmi))
+        else:
+            data = 0
+            return render_template("tasks.html",data = data,lst = len(ls_bmi))
 
     if request.method == "POST":
         if "task_bmi" in request.form:
@@ -108,20 +121,20 @@ def do_task():
     if request.method == "GET":
         data = tasks.get_activ_bmi()
         data = data[0]
-        try:
-            lst= tasks.cal_bmi(users.user_id())
-            if len(lst)>1:
-                lst = lst[0]
-                weight = lst[0]
-                height= lst[1]
-                bmi = round((weight / ((height / 100) ** 2)), 2)
-                return render_template("tasks_p.html", bmi = bmi)
-        except: 
-            if data[0] == 1:
-                data = data[0]
-                print(data)
-                bmi = "?"
-                return render_template("tasks_p.html",data = data, bmi = bmi)
+        lst= tasks.cal_bmi(users.user_id())
+
+        if len(lst)>1:
+            lst = lst[0]
+            weight = lst[0]
+            height= lst[1]
+            bmi = round((weight / ((height / 100) ** 2)), 2)
+            return render_template("tasks_p.html", bmi = bmi)
+         
+        elif data[0] == 1:
+            data = data[0]
+            print(data)
+            bmi = "?"
+            return render_template("tasks_p.html",data = data, bmi = bmi)
         
 @app.route("/tasks_p", methods= ["POST"])
 def send_task():
