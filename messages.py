@@ -11,7 +11,7 @@ def send(title,content):
     user_id = users.user_id()
     if user_id == 0:
         return False
-    sql = "INSERT INTO messages (title, content, user_id, sent_at, visible) VALUES (:title, :content, :user_id, NOW(),:visible)"
+    sql = "INSERT INTO messages (title, content, user_id, sent_at, visible) VALUES (:title, :content, :user_id, NOW(), :visible)"
     db.session.execute((text(sql)), {"title":title,"content":content, "user_id":user_id,"visible":1})
     db.session.commit()
     return True
@@ -25,3 +25,9 @@ def remove_message(messages_id, user_id):
     sql = "UPDATE messages  SET visible = 0 WHERE id =:id AND user_id=:user_id"
     db.session.execute((text(sql)), {"id":messages_id,"user_id":user_id})
     db.session.commit()
+
+def mes_chain(messages_id):
+    sql = """SELECT m.title, m.content, m.sent_at, u.name FROM messages m, users u
+             WHERE m.user_id = u.id AND m.id =m.id ORDER BY m.sent_at """
+    result = db.session.execute((text(sql)), {"m.id":messages_id})
+    return result.fetchall()

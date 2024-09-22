@@ -29,7 +29,8 @@ messages = db.Table(
     Column("content", String),
     Column("user_id",ForeignKey("users.id"), nullable=False),
     Column("sent_at", TIMESTAMP),
-    Column("visible",Integer)
+    Column("visible",Integer),
+    Column("ref_key", ForeignKey("messages.id"))
 )
 
 tasks1 = db.Table(

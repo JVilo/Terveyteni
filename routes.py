@@ -58,6 +58,19 @@ def show_mess():
     list = messages.get_list()
     return render_template("messages.html", count=len(list), messages=list)
 
+@app.route("/messages",methods=["POST"])
+def message_chain():
+    if request.method == "POST":
+        if "message" in request.form:
+            message = request.form["message"]
+            ms = messages.mes_chain(message)
+            return render_template("/m_chain.html", ms = ms)
+
+@app.route("/m_chain", methods=["POST"])
+def ans_chain():
+    if request.method == "POST":
+        pass
+
 @app.route("/newm")
 def new():
     return render_template("newm.html")

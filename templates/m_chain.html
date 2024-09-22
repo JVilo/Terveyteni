@@ -1,0 +1,16 @@
+{% block content %}
+{% for message in ms %}
+
+<i>Otsikko:</i>{{ message[0] }}
+<p>
+<i> viesti:</i>{{ message[1] }}
+<p>
+<i>Aika:</i> {{ message[2].strftime("%Y-%m-%d %H:%M:%S") }}
+<p>
+<i>Lähettäjä:</i>{{ message[1] }}
+<p>
+{%endfor%}
+<a href="/answer">vastaa</a>
+<p>
+<a href="/">edellinen sivu</a>
+{%endblock%}
