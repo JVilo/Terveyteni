@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Tehtävät</h2>
+
+<form action="/tasks_p" method="post">
+<hr>
+{% if data == 1 %}
+
+<p>Täytä paino (kg) ja pituus (cm)</p>
+
+<input type="number"  name="weight" min="1" max="500"> paino pyöristettynä, ei pilkkuja <br>
+<input type="number"  name="height" min="1" max="300"> pituus pyöristettynä, ei pilkkuja <br>
+
+<input type="submit" value="Lähetä">
+{% endif %}
+</form>
+<p>Sinun BMI = {{bmi}}</p>
+
+<a href="/">Palaa takaisin</a>
+{% endblock %}

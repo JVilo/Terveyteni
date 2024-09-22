@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Etusivu</h2>
+
+
+<p>Valitse tehtävä:</p>
+<form action="/tasks" method="post">
+
+<input type="checkbox" name="task_bmi"task_bmi="1"> Bmi <br>
+<input type="checkbox" name="task_rr" value="1"> Verenpaine seuanta <br>
+<input type="checkbox" name="task_other" value="1"> Muu<br>
+
+
+<input type="submit" value="valitse">
+
+</form>
+{% endblock %}

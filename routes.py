@@ -2,7 +2,6 @@ from app import app
 from flask import render_template, request, redirect
 import users
 import messages
-#import choose
 import tasks
 
 
@@ -10,7 +9,7 @@ import tasks
 def index():
     return render_template("index.html")
 
-@app.route("/login", methods=["get", "post"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
         return render_template("login.html")
@@ -28,7 +27,7 @@ def logout():
     users.logout()
     return redirect("/")
 
-@app.route("/register", methods=["get", "post"])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
         return render_template("register.html")
@@ -71,7 +70,7 @@ def send():
     else:
         return render_template("error.html", message="Viestin lähetys ei onnistunut")
 
-@app.route("/remove",methods=["get", "post"])
+@app.route("/remove",methods=["GET", "POST"])
 def remove():
 
     if request.method == "GET":
@@ -81,11 +80,59 @@ def remove():
     if request.method == "POST":
         users.check_csrf()
 
-        print("message" in request.form)
         if "message" in request.form:
             message = request.form["message"]
             messages.remove_message(message, users.user_id())
             
         return redirect("/")
     
+@app.route("/tasks",methods=["GET", "POST"])
+def chose_task():
+    users.require_role(2)
+    if request.method == "GET":
+        return render_template("tasks.html")
 
+    if request.method == "POST":
+        if "task_bmi" in request.form:
+            task_bmi =request.form["task_bmi"]
+            if task_bmi == "on":
+                task_bmi = 1
+                tasks.activate_bmi(task_bmi)
+    
+        return redirect("/")
+
+@app.route("/tasks_p",methods=["GET"])
+def do_task():
+    users.require_role(1)
+    
+    if request.method == "GET":
+        data = tasks.get_activ_bmi()
+        data = data[0]
+        try:
+            lst= tasks.cal_bmi(users.user_id())
+            if len(lst)>1:
+                lst = lst[0]
+                weight = lst[0]
+                height= lst[1]
+                bmi = round((weight / ((height / 100) ** 2)), 2)
+                return render_template("tasks_p.html", bmi = bmi)
+        except: 
+            if data[0] == 1:
+                data = data[0]
+                print(data)
+                bmi = "?"
+                return render_template("tasks_p.html",data = data, bmi = bmi)
+        
+@app.route("/tasks_p", methods= ["POST"])
+def send_task():
+            
+    if request.method == "POST":
+        if "weight" in request.form and "height" in request.form:
+            weight = request.form["weight"]
+            height = request.form["height"]
+            tasks.Bmi(weight,height)
+            return redirect("/tasks_p")
+
+
+
+    

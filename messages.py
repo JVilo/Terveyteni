@@ -22,8 +22,6 @@ def get_my_message(user_id):
     return db.session.execute((text(sql)), {"user_id":user_id}).fetchall()
 
 def remove_message(messages_id, user_id):
-    print(messages_id, user_id)
     sql = "UPDATE messages  SET visible = 0 WHERE id =:user_id AND user_id=:user_id"
-    print(sql)
     db.session.execute((text(sql)), {"id":messages_id, "user_id":user_id})
     db.session.commit()
