@@ -1,16 +1,17 @@
 {% block content %}
-<form action="/messages" method="post">
-Viestien määrä: {{ count }}
+Keskustelijen määrä: {{ count }}
 <hr>
+<form action="/messages" method="POST">
 {% for message in messages %}
 <i>Otsikko:</i>{{ message[0] }}
 <p>
 <i>Aika:</i> {{ message[3].strftime("%Y-%m-%d %H:%M:%S") }}
 <p>
-<input type="submit" name="message" value="{{ message.id }}"> {{ message.content }} <br>
+
+<input name="message.id" type="submit" value="{{ message.id }}">{{ message.title }}
 <hr>
-</form>
 {% endfor %}
+</form>
 
 <a href="/newm">Uusi keskustelu</a>
 <br>

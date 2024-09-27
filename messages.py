@@ -3,7 +3,7 @@ from sqlalchemy.sql import text
 import users
 
 def get_list():
-    sql = "SELECT M.title, M.content, U.name, M.sent_at FROM messages M, users U WHERE M.user_id=U.id AND m.visible=1 ORDER BY M.id"
+    sql = "SELECT M.title, M.content, U.name, M.sent_at, M.id FROM messages M, users U WHERE M.user_id=U.id AND m.visible=1 ORDER BY M.id"
     result = db.session.execute((text(sql)))
     return result.fetchall()
 
@@ -23,11 +23,15 @@ def get_my_message(user_id):
 
 def remove_message(messages_id, user_id):
     sql = "UPDATE messages  SET visible = 0 WHERE id =:id AND user_id=:user_id"
-    db.session.execute((text(sql)), {"id":messages_id,"user_id":user_id})
+    db.session.execute((text(sql)), {"messages_id":messages_id,"user_id":user_id})
     db.session.commit()
 
-def mes_chain(messages_id):
+def mes_chain(message_id):
+    print("yrittää tuoda taulun")
     sql = """SELECT m.title, m.content, m.sent_at, u.name FROM messages m, users u
-             WHERE m.user_id = u.id AND m.id =m.id ORDER BY m.sent_at """
-    result = db.session.execute((text(sql)), {"m.id":messages_id})
-    return result.fetchall()
+             WHERE m.user_id = u.id AND m.id=:message_id ORDER BY m.sent_at """
+    result = db.session.execute((text(sql)), {"message_id":message_id})
+    for x in result:
+        print(x,"löytyy taulusta")
+        value = x
+        return value

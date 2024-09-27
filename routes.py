@@ -1,5 +1,7 @@
-from app import app
+from crypt import methods
+
 from flask import render_template, request, redirect
+from app import app
 import users
 import messages
 import tasks
@@ -53,18 +55,30 @@ def register():
             return render_template("error.html", message="Rekisteröinti ei onnistunut")
         return redirect("/")
 
-@app.route("/messages")
+@app.route("/messages",methods=["GET", "POST"])
 def show_mess():
-    list = messages.get_list()
-    return render_template("messages.html", count=len(list), messages=list)
+    if request.method == "GET":
+        lst = messages.get_list()
+        print(lst)
+        return render_template("messages.html", count=len(lst), messages=lst)
 
-@app.route("/messages",methods=["POST"])
-def message_chain():
     if request.method == "POST":
-        if "message" in request.form:
-            message = request.form["message"]
+        print("viestien tuonti")
+        if "message.id" in request.form:
+            message = request.form["message.id"]
+            print(message, "tämä on ID")
             ms = messages.mes_chain(message)
-            return render_template("/m_chain.html", ms = ms)
+            print(ms,"tämä on tuloste")
+            print(ms[0])
+            return render_template("m_chain.html", ms =ms, count = len(ms))
+
+
+#@app.route("/m_chain", methods=["GET"])
+#def message_chain():
+    #print("näytä viesti")
+    #if request.method == "GET":
+        #ms = messages.mes_chain(message)
+        #return render_template("m_chain.html", ms = ms)
 
 @app.route("/m_chain", methods=["POST"])
 def ans_chain():
@@ -106,17 +120,21 @@ def chose_task():
     if request.method == "GET":
         data = tasks.get_bmi()
         ls_bmi=[]
-        if len(data)>1:
+        if tasks.get_activ_bmi():
+            t = 0
+        else:
+            t = 1
+        if data:
             for x in data:
                 name = x[0]
                 weight = x[1]
                 height = x[2]
                 bmi = round((weight / ((height / 100) ** 2)), 2)
                 ls_bmi.append((name,weight,height,bmi))
-            return render_template("tasks.html", data = ls_bmi,lst = len(ls_bmi))
+            return render_template("tasks.html", data = ls_bmi,lst = len(ls_bmi), t=t)
         else:
             data = 0
-            return render_template("tasks.html",data = data,lst = len(ls_bmi))
+            return render_template("tasks.html",data = data,lst = len(ls_bmi), t=t)
 
     if request.method == "POST":
         if "task_bmi" in request.form:
@@ -133,7 +151,6 @@ def do_task():
     
     if request.method == "GET":
         data = tasks.get_activ_bmi()
-        data = data[0]
         lst= tasks.cal_bmi(users.user_id())
 
         if len(lst)>1:
@@ -143,12 +160,15 @@ def do_task():
             bmi = round((weight / ((height / 100) ** 2)), 2)
             return render_template("tasks_p.html", bmi = bmi)
          
-        elif data[0] == 1:
-            data = data[0]
-            print(data)
+        if len(data):
+            data = 1
             bmi = "?"
             return render_template("tasks_p.html",data = data, bmi = bmi)
-        
+        else:
+            data = 0
+            bmi = "?"
+            return render_template("tasks_p.html",data = data, bmi = bmi)
+
 @app.route("/tasks_p", methods= ["POST"])
 def send_task():
             
