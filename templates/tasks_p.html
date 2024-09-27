@@ -13,6 +13,9 @@
 <input type="number"  name="height" min="1" max="300"> pituus pyöristettynä, ei pilkkuja <br>
 
 <input type="submit" value="Lähetä">
+{%endif%}
+{%if data == 0%}
+sinulla ei ole aktiivista tehtävää.
 {% endif %}
 </form>
 <p>Sinun BMI = {{bmi}}</p>

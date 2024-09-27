@@ -21,7 +21,10 @@
 <p>Valitse tehtävä:</p>
 <form action="/tasks" method="post">
 
+{%if t ==1%}
+
 <input type="checkbox" name="task_bmi"task_bmi="1"> Bmi <br>
+{%endif%}
 <input type="checkbox" name="task_rr" value="1"> Verenpaine seuanta <br>
 <input type="checkbox" name="task_other" value="1"> Muu<br>
 

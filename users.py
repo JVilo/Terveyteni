@@ -1,8 +1,8 @@
 import os
-from db import db
 from flask import abort, request, session
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
+from db import db
 
 def login(name, password):
     sql = "SELECT password, id, role FROM users WHERE name=:name"
@@ -31,6 +31,7 @@ def register(name, password, role):
         db.session.execute((text(sql)), {"name":name, "password":hash_value, "role":role,})
         db.session.commit()
     except Exception as e:
+        print("Exception occurred during registration", e)
         return False
     return login(name, password)
 
