@@ -27,11 +27,9 @@ def remove_message(messages_id, user_id):
     db.session.commit()
 
 def mes_chain(message_id):
-    print("yrittää tuoda taulun")
     sql = """SELECT m.title, m.content, m.sent_at, u.name FROM messages m, users u
              WHERE m.user_id = u.id AND m.id=:message_id ORDER BY m.sent_at """
     result = db.session.execute((text(sql)), {"message_id":message_id})
     for x in result:
-        print(x,"löytyy taulusta")
         value = x
         return value

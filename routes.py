@@ -59,17 +59,12 @@ def register():
 def show_mess():
     if request.method == "GET":
         lst = messages.get_list()
-        print(lst)
         return render_template("messages.html", count=len(lst), messages=lst)
 
     if request.method == "POST":
-        print("viestien tuonti")
         if "message.id" in request.form:
             message = request.form["message.id"]
-            print(message, "tämä on ID")
             ms = messages.mes_chain(message)
-            print(ms,"tämä on tuloste")
-            print(ms[0])
             return render_template("m_chain.html", ms =ms, count = len(ms))
 
 
