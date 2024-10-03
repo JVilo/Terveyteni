@@ -1,13 +1,50 @@
+{% extends "layout.html" %}
 {% block content %}
-<h2>{{ ms.title }}</h2>
-<p>
-<i> viesti:</i>{{ms[1] }}
-<p>
-<i>Aika:</i> {{ms[2].strftime("%Y-%m-%d %H:%M:%S") }}
-<p>
-<i>Lähettäjä:</i>{{ ms[3] }}
-<p>
-<a href="/answer">vastaa</a>
-<p>
-<a href="/">edellinen sivu</a>
+<div class="container">
+    <div class="row">
+        <p class="h2">{{ parent.title }}</p>
+        <div class="col-2">
+            <div>Aika:</div>
+            <div>Lähettäjä:</div>
+            <div>viesti:</div>
+        </div>
+        <div class="col">
+            <div>{{ parent.name }}</div>
+            <div>
+                {{parent.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
+            </div>
+            <div>{{parent.content}}</div>
+        </div>
+        <hr/>
+    </div>
+    {% for msg_chain in ms %}
+    <div class="row">
+        <div class="col-2">
+            <div>Lähettäjä:</div>
+            <div>Aika:</div>
+            <div>viesti:</div>
+        </div>
+        <div class="col">
+            <div>{{ msg_chain.name }}</div>
+            <div>
+                {{msg_chain.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
+            </div>
+            <div>{{msg_chain.content}}</div>
+        </div>
+        <hr/>
+    </div>
+    {% endfor %}
+    <div class="row">
+        <p>
+            Vastaa:
+        </p>
+        <form action="{{ url_for('message_chain', id=parent.id) }}" method="POST">
+            <textarea name="content" rows="3" cols="30"></textarea>
+            <br>
+            <input type="submit" value="Lähetä">
+            <p>
+        </form>
+    </div>
+    <a href="{{ url_for('list_messages') }}">edellinen sivu</a>
+</div>
 {%endblock%}

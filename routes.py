@@ -1,6 +1,6 @@
 from crypt import methods
 
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, url_for
 from app import app
 import users
 import messages
@@ -10,6 +10,7 @@ import tasks
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -24,10 +25,12 @@ def login():
             return render_template("error.html", message="Väärä tunnus tai salasana")
         return redirect("/")
 
+
 @app.route("/logout")
 def logout():
     users.logout()
     return redirect("/")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -41,12 +44,12 @@ def register():
 
         password1 = request.form["password1"]
         password2 = request.form["password2"]
-        
+
         if password1 != password2:
             return render_template("error.html", message="Salasanat eroavat")
         if password1 == "":
             return render_template("error.html", message="Salasana on tyhjä")
-        
+
         role = request.form["role"]
         if role not in ("1", "2"):
             return render_template("error.html", message="Tuntematon käyttäjärooli")
@@ -55,50 +58,55 @@ def register():
             return render_template("error.html", message="Rekisteröinti ei onnistunut")
         return redirect("/")
 
-@app.route("/messages",methods=["GET", "POST"])
-def show_mess():
+
+@app.route("/messages/<id>", methods=["GET", "POST"])
+def message_chain(id):
+    if request.method == 'GET':
+        parent = messages.get_message(id)
+        ms = messages.get_answers(id)
+        return render_template(
+            "m_chain.html",
+            parent=parent,
+            ms=ms,
+            count=len(ms)
+        )
+
+    print("lähetetään sisältöä")
+    if "content" in request.form:
+        content = request.form["content"]
+        ref_key = id
+        print('diudiu', content, ref_key)
+        if messages.answer_mes(content, ref_key):
+            return redirect(url_for('message_chain', id=id))
+        else:
+            print("virhe")
+
+
+@app.route("/messages", methods=["GET"])
+def list_messages():
     if request.method == "GET":
         lst = messages.get_list()
         return render_template("messages.html", count=len(lst), messages=lst)
 
-    if request.method == "POST":
-        if "message.id" in request.form:
-            message = request.form["message.id"]
-            ms = messages.mes_chain(message)
-            return render_template("m_chain.html", ms =ms, count = len(ms))
 
+@app.route("/newm", methods=['POST', 'GET'])
+def new_message():
+    if request.method == 'GET':
+        return render_template("newm.html")
 
-#@app.route("/m_chain", methods=["GET"])
-#def message_chain():
-    #print("näytä viesti")
-    #if request.method == "GET":
-        #ms = messages.mes_chain(message)
-        #return render_template("m_chain.html", ms = ms)
-
-@app.route("/m_chain", methods=["POST"])
-def ans_chain():
-    if request.method == "POST":
-        pass
-
-@app.route("/newm")
-def new():
-    return render_template("newm.html")
-
-@app.route("/send", methods=["POST"])
-def send():
     title = request.form["title"]
     content = request.form["content"]
-    if messages.send(title,content):
-        return redirect("/")
+    if messages.send(title, content):
+        return redirect("/messages")
     else:
         return render_template("error.html", message="Viestin lähetys ei onnistunut")
 
-@app.route("/remove",methods=["GET", "POST"])
-def remove():
 
+@app.route("/remove", methods=["GET", "POST"])
+def remove():
     if request.method == "GET":
         message = messages.get_my_message(users.user_id())
-        return render_template("remove.html", list= message)
+        return render_template("remove.html", list=message)
 
     if request.method == "POST":
         users.check_csrf()
@@ -106,15 +114,16 @@ def remove():
         if "message" in request.form:
             message = request.form["message"]
             messages.remove_message(message, users.user_id())
-            
+
         return redirect("/")
-    
-@app.route("/tasks",methods=["GET", "POST"])
+
+
+@app.route("/tasks", methods=["GET", "POST"])
 def chose_task():
     users.require_role(2)
     if request.method == "GET":
         data = tasks.get_bmi()
-        ls_bmi=[]
+        ls_bmi = []
         if tasks.get_activ_bmi():
             t = 0
         else:
@@ -125,55 +134,52 @@ def chose_task():
                 weight = x[1]
                 height = x[2]
                 bmi = round((weight / ((height / 100) ** 2)), 2)
-                ls_bmi.append((name,weight,height,bmi))
-            return render_template("tasks.html", data = ls_bmi,lst = len(ls_bmi), t=t)
+                ls_bmi.append((name, weight, height, bmi))
+            return render_template("tasks.html", data=ls_bmi, lst=len(ls_bmi), t=t)
         else:
             data = 0
-            return render_template("tasks.html",data = data,lst = len(ls_bmi), t=t)
+            return render_template("tasks.html", data=data, lst=len(ls_bmi), t=t)
 
     if request.method == "POST":
         if "task_bmi" in request.form:
-            task_bmi =request.form["task_bmi"]
+            task_bmi = request.form["task_bmi"]
             if task_bmi == "on":
                 task_bmi = 1
                 tasks.activate_bmi(task_bmi)
-    
+
         return redirect("/")
 
-@app.route("/tasks_p",methods=["GET"])
+
+@app.route("/tasks_p", methods=["GET"])
 def do_task():
     users.require_role(1)
-    
+
     if request.method == "GET":
         data = tasks.get_activ_bmi()
-        lst= tasks.cal_bmi(users.user_id())
+        lst = tasks.cal_bmi(users.user_id())
 
-        if len(lst)>1:
+        if len(lst) > 1:
             lst = lst[0]
             weight = lst[0]
-            height= lst[1]
+            height = lst[1]
             bmi = round((weight / ((height / 100) ** 2)), 2)
-            return render_template("tasks_p.html", bmi = bmi)
-         
+            return render_template("tasks_p.html", bmi=bmi)
+
         if len(data):
             data = 1
             bmi = "?"
-            return render_template("tasks_p.html",data = data, bmi = bmi)
+            return render_template("tasks_p.html", data=data, bmi=bmi)
         else:
             data = 0
             bmi = "?"
-            return render_template("tasks_p.html",data = data, bmi = bmi)
+            return render_template("tasks_p.html", data=data, bmi=bmi)
 
-@app.route("/tasks_p", methods= ["POST"])
+
+@app.route("/tasks_p", methods=["POST"])
 def send_task():
-            
     if request.method == "POST":
         if "weight" in request.form and "height" in request.form:
             weight = request.form["weight"]
             height = request.form["height"]
-            tasks.Bmi(weight,height)
+            tasks.Bmi(weight, height)
             return redirect("/tasks_p")
-
-
-
-    

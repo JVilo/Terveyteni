@@ -1,17 +1,15 @@
 {% block content %}
 Keskustelijen määrä: {{ count }}
 <hr>
-<form action="/messages" method="POST">
+
 {% for message in messages %}
 <i>Otsikko:</i>{{ message[0] }}
 <p>
-<i>Aika:</i> {{ message[3].strftime("%Y-%m-%d %H:%M:%S") }}
+    <i>Aika:</i> {{ message[3].strftime("%Y-%m-%d %H:%M:%S") }}
 <p>
-
-<input name="message.id" type="submit" value="{{ message.id }}">{{ message.title }}
+    <a href="{{ url_for('message_chain', id=message.id) }}">Avaa viestiketju</a>
 <hr>
 {% endfor %}
-</form>
 
 <a href="/newm">Uusi keskustelu</a>
 <br>
