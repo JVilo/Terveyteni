@@ -1,0 +1,27 @@
+{% block content %}
+<h1>BMI Calculator</h1>
+
+<body>
+
+<div class="main">
+	<form class="pure-form" method="POST" action="/">
+	Paino kg:<br>
+	<input type="text" name="weight"><br>
+	Pituus cm:<br>
+	<input type="text" name="height"><br>
+	<button type="submit" class="pure-button pure-button-primary" value="Submit">Submit</button>
+	</form>
+</div>
+
+<br>
+
+<div class="main">
+	{% if bmi %}
+	    <p>
+        {% print("Your BMI is {}.".format(bmi)) %}
+        </p>
+	{% endif %}
+</div>
+
+</body>
+{% endblock %}
