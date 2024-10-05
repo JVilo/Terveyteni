@@ -2,6 +2,7 @@
 {% block content %}
 
 <h2>Rekisteröinti</h2>
+<p class="error-message">{{ message }}</p>
 
 <form action="/register" method="post">
 Tunnus: <br><input type="text" name="username" minlength="1" maxlength="20">
