@@ -22,7 +22,8 @@ def login():
         password = request.form["password"]
 
         if not users.login(username, password):
-            return render_template("error.html", message="Väärä tunnus tai salasana")
+            error = "Väärä tunnus tai salasana"
+            return render_template("login.html", message=error)
         return redirect("/")
 
 
@@ -40,22 +41,27 @@ def register():
     if request.method == "POST":
         username = request.form["username"]
         if len(username) < 1 or len(username) > 20:
-            return render_template("error.html", message="Tunnuksessa tulee olla 1-20 merkkiä")
+            error = "Tunnuksessa tulee olla 1-20 merkkiä"
+            return render_template("register.html", message=error)
 
         password1 = request.form["password1"]
         password2 = request.form["password2"]
 
         if password1 != password2:
-            return render_template("error.html", message="Salasanat eroavat")
+            error = "Salasanat eroavat"
+            return render_template("register.html", message=error)
         if password1 == "":
-            return render_template("error.html", message="Salasana on tyhjä")
+            error = "Salasana on tyhjä"
+            return render_template("register.html", message=error)
 
         role = request.form["role"]
         if role not in ("1", "2"):
-            return render_template("error.html", message="Tuntematon käyttäjärooli")
+            error = "Tuntematon käyttäjärooli"
+            return render_template("register.html", message=error)
 
         if not users.register(username, password1, role):
-            return render_template("error.html", message="Rekisteröinti ei onnistunut")
+            error = "Rekisteröinti ei onnistunut"
+            return render_template("error.html", message=error)
         return redirect("/")
 
 
@@ -75,7 +81,6 @@ def message_chain(id):
     if "content" in request.form:
         content = request.form["content"]
         ref_key = id
-        print('diudiu', content, ref_key)
         if messages.answer_mes(content, ref_key):
             return redirect(url_for('message_chain', id=id))
         else:
@@ -91,31 +96,41 @@ def list_messages():
 
 @app.route("/newm", methods=['POST', 'GET'])
 def new_message():
-    if request.method == 'GET':
+    if request.method == "GET":
         return render_template("newm.html")
 
     title = request.form["title"]
+    if title == "":
+        error = "otsikko ei voi olla tyhjä"
+        return render_template("newm.html", message=error)
+
     content = request.form["content"]
+    if content == "":
+        error = "viesti ei voi olla tyhjä"
+        return render_template("newm.html", message=error)
+
     if messages.send(title, content):
         return redirect("/messages")
     else:
-        return render_template("error.html", message="Viestin lähetys ei onnistunut")
+        error = "Viestin lähetys ei onnistunut"
+        return render_template("newm.html", message=error)
 
 
-@app.route("/remove", methods=["GET", "POST"])
-def remove():
-    if request.method == "GET":
-        message = messages.get_my_message(users.user_id())
-        return render_template("remove.html", list=message)
+@app.route("/m_chain/<id>", methods=["POST"])
+def remove(id):
+    mes = messages.get_mes(id)
+    messages.remove_message(id)
+    return redirect(url_for('message_chain', id=mes[0][1]))
 
-    if request.method == "POST":
-        users.check_csrf()
 
-        if "message" in request.form:
-            message = request.form["message"]
-            messages.remove_message(message, users.user_id())
-
-        return redirect("/")
+@app.route("/m_chain/<id>/edit", methods=["POST"])
+def edit_mes(id):
+    messages.edit_mes(
+        id,
+        content=request.form['content']
+    )
+    message = messages.get_message(id)
+    return redirect(url_for('message_chain', id=message['ref_key']))
 
 
 @app.route("/tasks", methods=["GET", "POST"])

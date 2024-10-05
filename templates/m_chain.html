@@ -18,6 +18,7 @@
         <hr/>
     </div>
     {% for msg_chain in ms %}
+
     <div class="row">
         <div class="col-2">
             <div>Lähettäjä:</div>
@@ -30,15 +31,36 @@
                 {{msg_chain.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
             </div>
             <div>{{msg_chain.content}}</div>
+            {{ msg_chain.user_id }} vs {{ session.user_id }}
+            {% if msg_chain.user_id == session.user_id %}
+            <form action="{{ url_for('remove', id=msg_chain.id) }}" method="POST">
+                <button>
+                    <input type="submit" value="poista"/>
+                </button>
+            </form>
+            <a class="btn btn-secondary" data-bs-toggle="collapse" href="#edit-{{msg_chain.id}}">
+                Muokkaa?
+            </a>
+            <form id="edit-{{msg_chain.id}}" class="collapse row" action="{{ url_for('edit_mes', id=msg_chain.id) }}"
+                  method="POST">
+                <div class="col">
+                    <textarea name="content" rows="3" cols="30">{{msg_chain.content}}</textarea>
+                </div>
+                <div class="col">
+                    <input type="submit" value="Lähetä"/>
+                </div>
+            </form>
+            {%endif%}
         </div>
         <hr/>
     </div>
+
     {% endfor %}
     <div class="row">
         <p>
             Vastaa:
         </p>
-        <form action="{{ url_for('message_chain', id=parent.id) }}" method="POST">
+        <form action="{{ url_for('message_chain', id = parent.id) }}" method="POST">
             <textarea name="content" rows="3" cols="30"></textarea>
             <br>
             <input type="submit" value="Lähetä">

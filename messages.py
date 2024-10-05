@@ -58,12 +58,26 @@ def get_my_message(user_id):
     return db.session.execute((text(sql)), {"user_id": user_id}).fetchall()
 
 
-def remove_message(messages_id, user_id):
-    print(messages_id)
-    sql = "UPDATE messages  SET visible = 0 WHERE id =:id AND user_id=:user_id"
-    db.session.execute((text(sql)), {"id": messages_id, "user_id": user_id})
+def remove_message(messages_id):
+    sql = "UPDATE messages  SET visible = 0 WHERE id =:id"
+    db.session.execute((text(sql)), {"id": messages_id})
     db.session.commit()
 
+def edit_mes(message_id, content):
+    sql = """UPDATE messages SET content=:content WHERE id=:message_id"""
+    db.session.execute((text(sql)), {"message_id":message_id, "content":content})
+    db.session.commit()
+
+def get_mes(message_id) -> list[dict]:
+    sql = """SELECT 
+                content, 
+                ref_key
+            FROM messages
+            WHERE id=:message_id
+            """
+    result = db.session.execute((text(sql)),{"message_id": message_id}).fetchall()
+    #result = result._mapping
+    return  result
 
 def get_message(message_id) -> list[dict]:
     sql = """
@@ -72,7 +86,8 @@ def get_message(message_id) -> list[dict]:
             m.content, 
             m.sent_at, 
             u.name, 
-            m.id
+            m.id,
+            m.ref_key
         FROM messages m, users u
         WHERE m.id=:message_id AND visible = 1
         ORDER BY m.sent_at 
@@ -89,11 +104,11 @@ def get_answers(parent_id) -> list[dict]:
             m.content, 
             m.sent_at, 
             u.name, 
-            m.id
+            m.id,
+            m.user_id
         FROM messages m, users u
         WHERE m.ref_key=:parent_id AND visible = 1 AND m.user_id =u.id
         ORDER BY m.sent_at 
         """
     result = db.session.execute((text(sql)), {"parent_id": parent_id}).all()
-    print(result,"tämä sisältö")
     return result
