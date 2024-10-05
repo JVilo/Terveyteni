@@ -118,9 +118,17 @@ def new_message():
 
 @app.route("/m_chain/<id>", methods=["POST"])
 def remove(id):
+    print("väärä remove")
     mes = messages.get_mes(id)
     messages.remove_message(id)
     return redirect(url_for('message_chain', id=mes[0][1]))
+
+
+@app.route("/messages/<id>/delete", methods=["POST"])
+def remove_chain(id):
+    print("tänne piti tulla")
+    messages.remove_message(id)
+    return redirect(url_for("list_messages"))
 
 
 @app.route("/m_chain/<id>/edit", methods=["POST"])
@@ -131,6 +139,14 @@ def edit_mes(id):
     )
     message = messages.get_message(id)
     return redirect(url_for('message_chain', id=message['ref_key']))
+
+@app.route("/m_chain/<id>/edit_title", methods=["POST"])
+def edit_title(id):
+    messages.edit_title(
+        id,
+        title=request.form["title"]
+    )
+    return redirect(url_for("list_messages"))
 
 
 @app.route("/tasks", methods=["GET", "POST"])

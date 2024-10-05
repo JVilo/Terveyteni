@@ -1,3 +1,4 @@
+from multiprocessing.process import parent_process
 from pyexpat.errors import messages
 
 from db import db
@@ -12,7 +13,8 @@ def get_list():
             M.content, 
             U.name, 
             M.sent_at, 
-            M.id 
+            M.id,
+            M.user_id
         FROM messages M, users U 
         WHERE M.user_id=U.id 
             AND m.visible=1
@@ -85,7 +87,8 @@ def get_message(message_id) -> list[dict]:
             m.title, 
             m.content, 
             m.sent_at, 
-            u.name, 
+            u.name,
+            m.user_id, 
             m.id,
             m.ref_key
         FROM messages m, users u
@@ -112,3 +115,8 @@ def get_answers(parent_id) -> list[dict]:
         """
     result = db.session.execute((text(sql)), {"parent_id": parent_id}).all()
     return result
+
+def edit_title(id, title) -> list[dict]:
+    sql = """UPDATE messages SET title=:title WHERE id=:id"""
+    db.session.execute((text(sql)), {"id":id, "title": title})
+    db.session.commit()
