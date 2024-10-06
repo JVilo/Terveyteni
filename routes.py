@@ -118,7 +118,6 @@ def new_message():
 
 @app.route("/m_chain/<id>", methods=["POST"])
 def remove(id):
-    print("väärä remove")
     mes = messages.get_mes(id)
     messages.remove_message(id)
     return redirect(url_for('message_chain', id=mes[0][1]))
@@ -139,6 +138,7 @@ def edit_mes(id):
     )
     message = messages.get_message(id)
     return redirect(url_for('message_chain', id=message['ref_key']))
+
 
 @app.route("/m_chain/<id>/edit_title", methods=["POST"])
 def edit_title(id):
@@ -214,3 +214,85 @@ def send_task():
             height = request.form["height"]
             tasks.Bmi(weight, height)
             return redirect("/tasks_p")
+
+
+@app.route("/private-chats", methods=["GET"])
+def private_chat_list_dr():
+
+    if users.get_current_role() ==2:
+        patients = tasks.get_users()
+        return render_template("private_chat.html", patients=patients,user_role=users.get_current_role())
+
+    if users.get_current_role() ==1:
+        lst = messages.get_private_messages_p(users.user_id())
+        return render_template("private_chat.html", lst=lst,user_role=users.get_current_role(),current_user_id = users.user_id(),length= len(lst))
+
+
+@app.route("/private-chat/<patient_id>", methods=["GET", "POST"])
+def private_chat(patient_id):
+
+    current_user_id = users.user_id()
+    if current_user_id != patient_id:
+        users.require_role(2)
+
+    private_messages = messages.get_private_messages(
+        patient_id=patient_id,
+        doctor_id=current_user_id
+    )
+    if request.method == "POST":
+        errors = []
+        title = request.form["title"]
+        if title == "":
+            errors.append("otsikko ei voi olla tyhjä")
+        content = request.form["content"]
+        if content == "":
+            errors.append("viesti ei voi olla tyhjä")
+        if errors:
+            return render_template(
+                "private_chat_site.html",
+                message=', '.join(errors),
+                patient_id=patient_id
+            )
+
+        if messages.send_private_message(
+                title,
+                content,
+                doctor_id=current_user_id,
+                patient_id=patient_id,
+        ):
+            return redirect(url_for(
+                "private_chat",
+                patient_id=patient_id)
+            )
+        else:
+            error = "Viestin lähetys ei onnistunut"
+            return render_template(
+                "private_chat_site.html",
+                message=error,
+                patient_id=patient_id,
+            )
+
+    return render_template(
+        "private_chat_site.html",
+        lst=private_messages,
+        patient_id=patient_id,
+    )
+
+
+@app.route("/private-chat-site/<dr_id>", methods = ["GET"])
+def show_chat_p(dr_id):
+    empty = False
+    if users.user_id() != dr_id:
+        users.require_role(1)
+        lst= messages.get_private_messages(
+            patient_id=users.user_id(),
+            doctor_id=dr_id
+        )
+        return render_template(
+            "private_chat_site.html",
+            lst=lst,
+            patient_id=users.user_id(),
+            empty=empty
+        )
+
+

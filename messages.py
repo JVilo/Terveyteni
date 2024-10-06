@@ -23,8 +23,6 @@ def get_list():
     result = db.session.execute((text(sql)))
     return result.fetchall()
 
-#def get_all():
-    #return db.session.execute(text('SELECT * FROM messages')).fetchall()
 
 def send(title, content):
     user_id = users.user_id()
@@ -65,10 +63,12 @@ def remove_message(messages_id):
     db.session.execute((text(sql)), {"id": messages_id})
     db.session.commit()
 
+
 def edit_mes(message_id, content):
     sql = """UPDATE messages SET content=:content WHERE id=:message_id"""
-    db.session.execute((text(sql)), {"message_id":message_id, "content":content})
+    db.session.execute((text(sql)), {"message_id": message_id, "content": content})
     db.session.commit()
+
 
 def get_mes(message_id) -> list[dict]:
     sql = """SELECT 
@@ -77,9 +77,10 @@ def get_mes(message_id) -> list[dict]:
             FROM messages
             WHERE id=:message_id
             """
-    result = db.session.execute((text(sql)),{"message_id": message_id}).fetchall()
-    #result = result._mapping
-    return  result
+    result = db.session.execute((text(sql)), {"message_id": message_id}).fetchall()
+    # result = result._mapping
+    return result
+
 
 def get_message(message_id) -> list[dict]:
     sql = """
@@ -100,6 +101,7 @@ def get_message(message_id) -> list[dict]:
 
     return result
 
+
 def get_answers(parent_id) -> list[dict]:
     sql = """
         SELECT 
@@ -116,7 +118,76 @@ def get_answers(parent_id) -> list[dict]:
     result = db.session.execute((text(sql)), {"parent_id": parent_id}).all()
     return result
 
+
 def edit_title(id, title) -> list[dict]:
     sql = """UPDATE messages SET title=:title WHERE id=:id"""
-    db.session.execute((text(sql)), {"id":id, "title": title})
+    db.session.execute((text(sql)), {"id": id, "title": title})
     db.session.commit()
+
+
+def get_private_messages(patient_id, doctor_id) -> list[dict]:
+    sql = """
+    SELECT
+        pm.id, 
+        pm.title, 
+        pm.content, 
+        pm.sent_at,
+        pm.patient_id,
+        pm.doctor_id,
+        pm.user_id,
+        u.name
+    FROM private_messages pm
+    LEFT JOIN users u
+     ON u.id = pm.user_id
+        WHERE
+            patient_id=:patient_id
+            AND doctor_id=:doctor_id
+    ORDER BY sent_at
+    """
+    return db.session.execute((text(sql)), {"patient_id": patient_id, "doctor_id": doctor_id}).fetchall()
+
+def get_private_messages_p(user_id) -> list[dict]:
+    sql = """
+        SELECT
+            pm.id, 
+            pm.title, 
+            pm.content, 
+            pm.sent_at,
+            pm.patient_id,
+            pm.doctor_id,
+            u.name,
+            pm.user_id
+        FROM private_messages pm
+         LEFT JOIN users u
+         ON u.id =pm.user_id
+            WHERE 
+                pm.patient_id=:patient_id
+        ORDER BY pm.sent_at
+        """
+    return db.session.execute((text(sql)), {
+        "patient_id":user_id,
+    }).fetchall()
+
+
+def send_private_message(title, content, doctor_id, patient_id):
+    user_id = users.user_id()
+    if user_id == 0:
+        return False
+    sql = """
+        INSERT INTO private_messages
+            (title, content, doctor_id, sent_at, visible, patient_id, user_id) 
+            VALUES (:title, :content, :doctor_id, NOW(), :visible, :patient_id, :user_id)
+        """
+    db.session.execute(
+        (text(sql)),
+        {
+            "title": title,
+            "content": content,
+            "user_id": user_id,
+            "visible": 1,
+            "patient_id": patient_id,
+            "doctor_id": doctor_id,
+        }
+    )
+    db.session.commit()
+    return True

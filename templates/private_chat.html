@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+<hr>
+{%if user_role == 2%}
+{% for p in patients%}
+<i>Nimi: </i>{{ p[0] }}
+<a href="{{ url_for('private_chat', patient_id=p.id) }}">Keskustelu</a>
+<p></p>
+
+{%endfor%}{%endif%}
+
+{%if user_role ==1%}
+<i>Sinulla on: {{length}} keskustelu </i>
+<p></p>
+{%for chat in lst%}
+<i>Otsikko: </i>{{chat.title}}
+<a href="{{ url_for('show_chat_p', dr_id=chat.doctor_id) }}">Avaa keskustleu</a>
+{%endfor%}{%endif%}
+
+{% endblock %}

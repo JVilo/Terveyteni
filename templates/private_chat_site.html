@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+<hr>
+<h2>Lääkärikeskustelu</h2>
+{% if lst|length == 0 %}
+<p class="error-message">{{ message }}</p>
+<form action="{{ url_for('private_chat', patient_id=patient_id) }}" method="post">
+Otsikko:<br>
+<textarea name="title" rows="1" cols="20"></textarea>
+<br>
+Viesti: <br>
+<textarea name="content" rows="3" cols="30"></textarea>
+<br>
+<input type="submit" value="Lähetä">
+</form>
+{%endif%}
+{%for content in lst%}
+<i>Otsikko: </i>{{ content.title }}
+<p></p>
+<i>Viesti: </i>{{content.content}}
+<p></p>
+<i>Lähetetty: </i>{{content.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
+<i>Lähettäjä: </i>{{content.name}}
+{% endfor %}
+{% endblock %}

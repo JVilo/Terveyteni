@@ -8,7 +8,7 @@ Keskustelijen määrä: {{ count }}
 <p></p>
 <i>Aika:</i> {{ message[3].strftime("%Y-%m-%d %H:%M:%S") }}
 <p></p>
-<a href="{{ url_for('list_messages', id=message.id) }}">Avaa viestiketju</a>
+<a href="{{ url_for('message_chain', id=message.id) }}">Avaa viestiketju</a>
 {%if message.user_id == session.user_id %}
 <form action="{{ url_for('remove_chain', id=message.id) }}" method="POST">
     <button>
