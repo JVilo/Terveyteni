@@ -78,7 +78,6 @@ def get_mes(message_id) -> list[dict]:
             WHERE id=:message_id
             """
     result = db.session.execute((text(sql)), {"message_id": message_id}).fetchall()
-    # result = result._mapping
     return result
 
 
@@ -144,7 +143,10 @@ def get_private_messages(patient_id, doctor_id) -> list[dict]:
             AND doctor_id=:doctor_id
     ORDER BY sent_at
     """
-    return db.session.execute((text(sql)), {"patient_id": patient_id, "doctor_id": doctor_id}).fetchall()
+    return db.session.execute((text(sql)), {
+        "patient_id": patient_id,
+        "doctor_id": doctor_id
+    }).fetchall()
 
 def get_private_messages_p(user_id) -> list[dict]:
     sql = """
@@ -168,6 +170,25 @@ def get_private_messages_p(user_id) -> list[dict]:
         "patient_id":user_id,
     }).fetchall()
 
+def get_priv_answ(patient_id,doctor_id):
+    sql = """
+            SELECT
+               pm.content, 
+               pm.sent_at,
+               u.name,
+               pm.user_id
+           FROM private_messages pm
+            LEFT JOIN users u
+            ON u.id =pm.user_id
+               WHERE 
+                   pm.patient_id=:patient_id
+                   AND doctor_id=:doctor_id
+           ORDER BY pm.sent_at
+           """
+    return db.session.execute((text(sql)), {
+        "patient_id": patient_id,
+        "doctor_id":doctor_id
+    }).fetchall()
 
 def send_private_message(title, content, doctor_id, patient_id):
     user_id = users.user_id()
@@ -189,5 +210,21 @@ def send_private_message(title, content, doctor_id, patient_id):
             "doctor_id": doctor_id,
         }
     )
+    db.session.commit()
+    return True
+def answer_private(content,doctor_id, patient_id):
+    user_id = users.user_id()
+    sql = """
+        INSERT INTO private_messages (content, user_id, sent_at, visible,doctor_id,patient_id) 
+            VALUES (:content, :user_id, NOW(), :visible,:doctor_id,:patient_id )
+        """
+    db.session.execute(
+        (text(sql)),
+        {
+            "content": content,
+            "user_id": user_id,
+            "visible": 1,
+            "doctor_id":doctor_id,
+            "patient_id":patient_id})
     db.session.commit()
     return True

@@ -77,14 +77,11 @@ def message_chain(id):
             count=len(ms)
         )
 
-    print("lähetetään sisältöä")
     if "content" in request.form:
         content = request.form["content"]
         ref_key = id
         if messages.answer_mes(content, ref_key):
             return redirect(url_for('message_chain', id=id))
-        else:
-            print("virhe")
 
 
 @app.route("/messages", methods=["GET"])
@@ -218,19 +215,22 @@ def send_task():
 
 @app.route("/private-chats", methods=["GET"])
 def private_chat_list_dr():
-
-    if users.get_current_role() ==2:
+    if users.get_current_role() == 2:
         patients = tasks.get_users()
-        return render_template("private_chat.html", patients=patients,user_role=users.get_current_role())
+        return render_template("private_chat.html", patients=patients, user_role=users.get_current_role())
 
-    if users.get_current_role() ==1:
+    if users.get_current_role() == 1:
         lst = messages.get_private_messages_p(users.user_id())
-        return render_template("private_chat.html", lst=lst,user_role=users.get_current_role(),current_user_id = users.user_id(),length= len(lst))
+        mlst = []
+        for x in lst:
+            if None not in x:
+                mlst.append(x)
+        return render_template("private_chat.html", lst=mlst, user_role=users.get_current_role(),
+                               current_user_id=users.user_id(), length=len(mlst))
 
 
-@app.route("/private-chat/<patient_id>", methods=["GET", "POST"])
-def private_chat(patient_id):
-
+@app.route("/doctor/private-chat/<patient_id>", methods=["GET"])
+def get_doctor_private_chat(patient_id):
     current_user_id = users.user_id()
     if current_user_id != patient_id:
         users.require_role(2)
@@ -239,7 +239,27 @@ def private_chat(patient_id):
         patient_id=patient_id,
         doctor_id=current_user_id
     )
-    if request.method == "POST":
+
+    return render_template(
+        "private_chat_site.html",
+        lst=private_messages,
+        patient_id=patient_id,
+        form_url=url_for("get_doctor_private_chat", patient_id=patient_id),
+    )
+
+
+@app.route("/doctor/private-chat/<patient_id>", methods=["POST"])
+def post_doctor_private_chat(patient_id):
+    current_user_id = users.user_id()
+    if current_user_id != patient_id:
+        users.require_role(2)
+
+    private_messages = messages.get_private_messages(
+        patient_id=patient_id,
+        doctor_id=current_user_id
+    )
+    if len(private_messages) ==0:
+
         errors = []
         title = request.form["title"]
         if title == "":
@@ -270,29 +290,35 @@ def private_chat(patient_id):
                 "private_chat_site.html",
                 message=error,
                 patient_id=patient_id,
+                form_url=url_for("post_doctor_private_chat", patient_id=patient_id),
+            )
+    else:
+        content = request.form["content"]
+        doctor_id = current_user_id
+        patient_id = patient_id
+        if messages.answer_private(content, doctor_id, patient_id):
+            return redirect(url_for("post_doctor_private_chat",patient_id=patient_id))
+
+
+@app.route("/patient/private-chat/<dr_id>", methods=["GET", "POST"])
+def show_chat_p(dr_id):
+    if request.method == 'GET':
+        if users.user_id() != dr_id:
+            users.require_role(1)
+            lst = messages.get_private_messages(
+                patient_id=users.user_id(),
+                doctor_id=dr_id
             )
 
-    return render_template(
-        "private_chat_site.html",
-        lst=private_messages,
-        patient_id=patient_id,
-    )
-
-
-@app.route("/private-chat-site/<dr_id>", methods = ["GET"])
-def show_chat_p(dr_id):
-    empty = False
-    if users.user_id() != dr_id:
-        users.require_role(1)
-        lst= messages.get_private_messages(
-            patient_id=users.user_id(),
-            doctor_id=dr_id
-        )
-        return render_template(
-            "private_chat_site.html",
-            lst=lst,
-            patient_id=users.user_id(),
-            empty=empty
-        )
-
-
+            return render_template(
+                "private_chat_site.html",
+                lst=lst,
+                patient_id=users.user_id(),
+                form_url=url_for("show_chat_p", dr_id=dr_id),
+            )
+    if request.method == "POST":
+        content = request.form["content"]
+        doctor_id = dr_id
+        patient_id = users.user_id()
+        if messages.answer_private(content, doctor_id, patient_id):
+            return redirect(url_for("show_chat_p", dr_id=dr_id))

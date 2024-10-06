@@ -4,22 +4,34 @@
 <h2>Lääkärikeskustelu</h2>
 {% if lst|length == 0 %}
 <p class="error-message">{{ message }}</p>
-<form action="{{ url_for('private_chat', patient_id=patient_id) }}" method="post">
-Otsikko:<br>
-<textarea name="title" rows="1" cols="20"></textarea>
-<br>
-Viesti: <br>
-<textarea name="content" rows="3" cols="30"></textarea>
-<br>
-<input type="submit" value="Lähetä">
+<form action="{{ url_for('private-chat-site', patient_id=patient_id) }}" method="post">
+    Otsikko:<br>
+    <textarea name="title" rows="1" cols="20"></textarea>
+    <br>
+    Viesti: <br>
+    <textarea name="content" rows="3" cols="30"></textarea>
+    <br>
+    <input type="submit" value="Lähetä">
 </form>
 {%endif%}
 {%for content in lst%}
+{%if content.title%}
 <i>Otsikko: </i>{{ content.title }}
+{%endif%}
 <p></p>
 <i>Viesti: </i>{{content.content}}
 <p></p>
 <i>Lähetetty: </i>{{content.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
+<p></p>
 <i>Lähettäjä: </i>{{content.name}}
 {% endfor %}
+
+<form action="{{ form_url }}" method="POST">
+    <textarea name="content" rows="3" cols="30"></textarea>
+    <br>
+    <input type="submit" value="Lähetä">
+    <p></p>
+</form>
+
+<a href="http://127.0.0.1:5000/">Etusivulle</a>
 {% endblock %}
