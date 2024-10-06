@@ -33,3 +33,14 @@ def get_activ_bmi():
     sql = """ SELECT activ FROM activ_bmi """
     result = db.session.execute((text(sql)))
     return result.fetchall()
+
+def get_users():
+    sql = """SELECT
+            name,
+            id,
+            role
+            FROM users
+            WHERE role = 1
+            """
+    result = db.session.execute((text(sql)))
+    return result.fetchall()
