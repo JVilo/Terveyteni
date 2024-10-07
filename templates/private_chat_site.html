@@ -4,7 +4,7 @@
 <h2>Lääkärikeskustelu</h2>
 {% if lst|length == 0 %}
 <p class="error-message">{{ message }}</p>
-<form action="{{ url_for('private-chat-site', patient_id=patient_id) }}" method="post">
+<form action="{{ url_for('post_doctor_private_chat', patient_id=patient_id) }}" method="post">
     Otsikko:<br>
     <textarea name="title" rows="1" cols="20"></textarea>
     <br>
@@ -25,13 +25,14 @@
 <p></p>
 <i>Lähettäjä: </i>{{content.name}}
 {% endfor %}
-
+{% if lst|length != 0 %}
 <form action="{{ form_url }}" method="POST">
     <textarea name="content" rows="3" cols="30"></textarea>
     <br>
     <input type="submit" value="Lähetä">
     <p></p>
 </form>
+{%endif%}
 
 <a href="http://127.0.0.1:5000/">Etusivulle</a>
 {% endblock %}

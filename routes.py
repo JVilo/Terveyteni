@@ -281,7 +281,7 @@ def post_doctor_private_chat(patient_id):
                 patient_id=patient_id,
         ):
             return redirect(url_for(
-                "private_chat",
+                "post_doctor_private_chat",
                 patient_id=patient_id)
             )
         else:
