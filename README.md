@@ -20,4 +20,18 @@ ylläpitäjä/läääkäri voi aktivoida tehtävän bmi ja nähdä tuloksen. kä
 Ylläpitäjä/lääkäri voi aloittaa yksityisen keskustelun potilaan kanssa joka näkyy ainoastaan lääkärin ja potilaan välillä.<br>
 Lääkärin ja potilaan välistä keskustelua ei voi vielä postaa millään tapaa.
 
+## sovelluksen käynnistäminen:
+1. Sovellusta voi testata ainoastaan paikallisesti omalla koneella.<br>
+<br>
+2. requirements.txt tiedostosta löytyy tarvittavat riippuvuudet, jotka on syytä asentaa.<br>
+<br>
+3. db.py tiedostosta löytyy kohta -- app.config["SQLALCHEMY_DATABASE_URI"] , johon osoitteeksi kannattaa laittaa itselleen omaan tietokantaan sopiva osoite.<br>
+<br>
+4. SECRET_KEY on syytä muodostaa .env tiedostoon. esim. mallia SECRET_KEY=123, muuten ei kirjautuminen onnistu.<br>
+   (Itse olen käyttänyt sovelluksen tekoon dockeria jolloin bd.py tiedostossa on myös osa joka luo minulle sql taulukot automaattisesti. Dockerin pitäisi käynnistyä komennolla: docker compose up -d.
+db.py koodi rivit 11-20 ovat turhia jos käytät koneelle asennettua psql tietokantaa.)<br>
+<br>
+5. Luo taulukot psqllään schema.sql tiedostosta.<br>
+<br>
+6. Flask run pitäisi käynnistää sovelluksen.<br>
 
