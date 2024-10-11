@@ -17,6 +17,7 @@
 {%if data == 0%}
 sinulla ei ole aktiivista tehtävää.
 {% endif %}
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 <p>Sinun BMI = {{bmi}}</p>
 

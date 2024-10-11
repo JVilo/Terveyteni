@@ -96,6 +96,7 @@ def new_message():
     if request.method == "GET":
         return render_template("newm.html")
 
+    users.check_csrf()
     title = request.form["title"]
     if title == "":
         error = "otsikko ei voi olla tyhjä"
@@ -129,6 +130,7 @@ def remove_chain(id):
 
 @app.route("/m_chain/<id>/edit", methods=["POST"])
 def edit_mes(id):
+    users.check_csrf()
     messages.edit_mes(
         id,
         content=request.form['content']
@@ -206,6 +208,7 @@ def do_task():
 @app.route("/tasks_p", methods=["POST"])
 def send_task():
     if request.method == "POST":
+        users.check_csrf()
         if "weight" in request.form and "height" in request.form:
             weight = request.form["weight"]
             height = request.form["height"]
@@ -259,7 +262,7 @@ def post_doctor_private_chat(patient_id):
         doctor_id=current_user_id
     )
     if len(private_messages) ==0:
-
+        users.check_csrf()
         errors = []
         title = request.form["title"]
         if title == "":
@@ -293,6 +296,7 @@ def post_doctor_private_chat(patient_id):
                 form_url=url_for("post_doctor_private_chat", patient_id=patient_id),
             )
     else:
+        users.check_csrf()
         content = request.form["content"]
         doctor_id = current_user_id
         patient_id = patient_id
@@ -317,6 +321,7 @@ def show_chat_p(dr_id):
                 form_url=url_for("show_chat_p", dr_id=dr_id),
             )
     if request.method == "POST":
+        users.check_csrf()
         content = request.form["content"]
         doctor_id = dr_id
         patient_id = users.user_id()

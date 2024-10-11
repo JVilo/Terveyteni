@@ -12,6 +12,7 @@
     <textarea name="content" rows="3" cols="30"></textarea>
     <br>
     <input type="submit" value="Lähetä">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 {%endif%}
 {%for content in lst%}
@@ -31,6 +32,7 @@
     <br>
     <input type="submit" value="Lähetä">
     <p></p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 {%endif%}
 
