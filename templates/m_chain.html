@@ -4,9 +4,9 @@
     <div class="row">
         <p class="h2">{{ parent.title }}</p>
         <div class="col-2">
-            <div>Aika:</div>
-            <div>Lähettäjä:</div>
-            <div>viesti:</div>
+            <div>Lähettäjä: </div>
+            <div>Aika: </div>
+            <div>viesti: </div>
         </div>
         <div class="col">
             <div>{{ parent.name }}</div>
@@ -36,9 +36,9 @@
 
     <div class="row">
         <div class="col-2">
-            <div>Lähettäjä:</div>
-            <div>Aika:</div>
-            <div>viesti:</div>
+            <div>Lähettäjä: </div>
+            <div>Aika: </div>
+            <div>viesti: </div>
         </div>
         <div class="col">
             <div>{{ msg_chain.name }}</div>
@@ -69,7 +69,6 @@
         </div>
         <hr/>
     </div>
-
     {% endfor %}
     <div class="row">
         <p>
@@ -82,7 +81,14 @@
             <p>
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
+
     </div>
+    {% if parent.user_id == session.user_id %}
+    <form action="{{url_for('freeze_mes', id = parent.id)}}" method="POST">
+        <input type="submit" value="kuittaa valmiiksi">
+    </form>
+    {%endif%}
     <a href="{{ url_for('list_messages') }}">edellinen sivu</a>
 </div>
+
 {%endblock%}

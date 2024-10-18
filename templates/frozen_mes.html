@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <p class="h2">{{ parent.title }}</p>
+        <div class="col-2">
+            <div>Lähettäjä: </div>
+            <div>Aika: </div>
+            <div>viesti: </div>
+        </div>
+        <div class="col">
+            <div>{{ parent.name }}</div>
+            <div>
+                {{ parent.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
+            </div>
+            <div>{{ parent.content }}</div>
+        </div>
+        <hr/>
+    </div>
+    {% for msg_chain in child %}
+
+    <div class="row">
+        <div class="col-2">
+            <div>Lähettäjä: </div>
+            <div>Aika: </div>
+            <div>viesti: </div>
+        </div>
+        <div class="col">
+            <div>{{ msg_chain.name }}</div>
+            <div>
+                {{msg_chain.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
+            </div>
+            <div>{{msg_chain.content}}</div>
+            {% if msg_chain.user_id == session.user_id or session.user_role== 2 %}
+            <form action="{{ url_for('remove', id=msg_chain.id) }}" method="POST">
+                <button>
+                    <input type="submit" value="poista"/>
+                </button>
+            </form>
+            {%endif%}
+        </div>
+        <hr/>
+    </div>
+    {% endfor %}
+
+    <a href="{{ url_for('list_messages') }}">edellinen sivu</a>
+</div>
+
+{%endblock%}

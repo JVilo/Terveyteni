@@ -31,6 +31,25 @@ Keskustelijen määrä: {{count }}
 {%endif%}
 <hr>
 {% endfor %}
+{%if freeze|length != 0 %}
+Valmiit keskustelut: {{freeze_cnt}}
+<p></p>
+{%for messages in freeze%}
+<i>Otsikko: </i>{{messages.title}}
+<p></p>
+<i>Aika:</i> {{ messages.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
+<p></p>
+<a href="{{ url_for('get_frozen_mes', id=messages.id) }}">Avaa</a>
+{%if messages.user_id == session.user_id or session.user_role== 2 %}
+<form action="{{ url_for('remove_chain', id=messages.id) }}" method="POST">
+    <button>
+        <input type="submit" value="poista ketju"/>
+    </button>
+</form>
+{%endif%}
+<p></p>
+{%endfor%}
+{%endif%}
 
 <a href="/newm">Uusi keskustelu</a>
 <br>

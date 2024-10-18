@@ -79,7 +79,9 @@ def list_messages():
     if request.method == "GET":
         lst = messages.get_list()
         cnt = messages.lst_count()
-        return render_template("messages.html", count=cnt, messages=lst)
+        frz = messages.get_freeze()
+        frz_cnt = messages.freeze_count()
+        return render_template("messages.html", count=cnt, messages=lst, freeze =frz, freeze_cnt = frz_cnt)
 
 
 @app.route("/newm", methods=['POST', 'GET'])
@@ -128,6 +130,22 @@ def edit_title(id):
         title=request.form["title"]
     )
     return redirect(url_for("list_messages"))
+
+@app.route("/m_chain/<id>/freeze", methods=["POST"])
+def freeze_mes(id):
+    messages.freeze(id)
+    return redirect(url_for("list_messages"))
+
+@app.route("/frozen_mes/<id>",methods=["GET"])
+def get_frozen_mes(id):
+    parent = messages.get_message(id, visible_status=3)
+    child = messages.get_answers(id)
+    return render_template(
+        "frozen_mes.html",
+        parent=parent,
+        child=child
+    )
+
 
 
 @app.route("/tasks", methods=["GET", "POST"])

@@ -1,6 +1,3 @@
-from multiprocessing.process import parent_process
-from pyexpat.errors import messages
-
 from db import db
 from sqlalchemy.sql import text
 import users
@@ -77,10 +74,8 @@ def remove_message(messages_id):
     db.session.commit()
 
 def remove_message_priv(messages_id):
-    print("poistuuko")
     sql = "UPDATE private_messages SET visible = 0 WHERE id =:id"
     db.session.execute((text(sql)), {"id": messages_id})
-    print("pitäisi poistua?")
     db.session.commit()
 
 
@@ -106,7 +101,7 @@ def get_mes(message_id) -> list[dict]:
     return result
 
 
-def get_message(message_id) -> list[dict]:
+def get_message(message_id, visible_status: int = 1) -> list[dict]:
     sql = """
         SELECT 
             m.title, 
@@ -115,16 +110,52 @@ def get_message(message_id) -> list[dict]:
             u.name,
             m.user_id, 
             m.id,
-            m.ref_key
-        FROM messages m, users u
-        WHERE m.id=:message_id AND visible = 1
+            m.ref_key,
+            visible
+        FROM messages m 
+        LEFT JOIN users u
+        ON u.id = m.user_id
+        WHERE m.id=:message_id AND m.visible = :visible_status
         ORDER BY m.sent_at 
         """
-    result = db.session.execute((text(sql)), {"message_id": message_id}).first()
+    result = db.session.execute((text(sql)), {"message_id": message_id, "visible_status": visible_status}).first()
     result = result._mapping
-
     return result
 
+def get_freeze() -> list[dict]:
+     sql = """
+             SELECT
+                 M.title,
+                 M.content,
+                 U.name,
+                 M.sent_at,
+                 M.id,
+                 M.user_id
+             FROM messages M, users U
+             WHERE M.user_id=U.id
+                 AND m.visible=3
+                 AND m.ref_key IS NULL
+             ORDER BY M.id"""
+     result = db.session.execute((text(sql)))
+     return result.fetchall()
+
+def freeze(messages_id):
+    sql = "UPDATE messages  SET visible = 3 WHERE id =:id"
+    db.session.execute((text(sql)), {"id": messages_id})
+    db.session.commit()
+
+def freeze_count():
+    sql = """
+        SELECT 
+            COUNT(M.title)
+            FROM messages M
+        WHERE
+            m.visible=3
+            AND m.ref_key IS NULL
+        """
+    result = db.session.execute((text(sql)))
+    result= result.fetchone()
+    return result[0]
 
 def get_answers(parent_id) -> list[dict]:
     sql = """
@@ -136,7 +167,7 @@ def get_answers(parent_id) -> list[dict]:
             m.id,
             m.user_id
         FROM messages m, users u
-        WHERE m.ref_key=:parent_id AND visible = 1 AND m.user_id =u.id
+        WHERE m.ref_key=:parent_id AND m.user_id =u.id
         ORDER BY m.sent_at 
         """
     result = db.session.execute((text(sql)), {"parent_id": parent_id}).all()
