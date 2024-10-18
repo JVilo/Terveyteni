@@ -2,9 +2,9 @@
 {% block content %}
 <p class="error-message">{{ message }}</p>
 <form action="/login" method="post">
-Tunnus: <input type="text" name="username">
+Tunnus: <input type="text" name="username" oninvalid="alert('käyttäjä tunnus tulee olla 2-20 merkkiä pitkä');" required>
 <p>
-Salasana: <input type="password" name="password">
+Salasana: <input type="password" name="password" oninvalid="alert('virheellinen salasana');"  required>
 <p>
 <input type="submit" value="Kirjaudu">
 </form>

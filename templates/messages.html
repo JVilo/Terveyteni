@@ -1,57 +1,67 @@
 {% extends "layout.html" %}
 {% block content %}
-Keskustelijen määrä: {{count }}
-<hr>
-
-{% for message in messages %}
-<i>Otsikko:</i>{{ message[0] }}
-<p></p>
-<i>Aika:</i> {{ message[3].strftime("%Y-%m-%d %H:%M:%S") }}
-<p></p>
-<a href="{{ url_for('message_chain', id=message.id) }}">Avaa viestiketju</a>
-{%if message.user_id == session.user_id or session.user_role== 2 %}
-<form action="{{ url_for('remove_chain', id=message.id) }}" method="POST">
-    <button>
-        <input type="submit" value="poista ketju"/>
-    </button>
-</form>
-<a class="btn btn-secondary" data-bs-toggle="collapse" href="#edit-{{message.id}}">
-    Muokkaa otsikkoa
-</a>
-<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-<form id="edit-{{message.id}}" class="collapse row" action="{{ url_for('edit_title', id=message.id) }}"
-      method="POST">
-    <div class="col">
-        <textarea name="title" rows="5" cols="50">{{message.title}}</textarea>
+<div class="container">
+    <div class="row">
+        <p class="h2">Keskustelijen määrä: {{count }}</p>
+        {% for message in messages %}
+        <div class="row">
+        <div class="col-2">
+            <div>Otsikko: </div>
+            <div>Aika: </div>
+        </div>
+        <div class="col">
+        <div>{{ message[0] }}</div>
+        <div>{{ message[3].strftime("%Y-%m-%d %H:%M:%S") }}</div>
+            <a href="{{ url_for('message_chain', id=message.id) }}">Avaa viestiketju</a>
+            {%if message.user_id == session.user_id or session.user_role== 2 %}
+            <form action="{{ url_for('remove_chain', id=message.id) }}" method="POST">
+                <button>
+                    <input type="submit" value="poista ketju"/>
+                </button>
+            </form>
+            <a class="btn btn-secondary" data-bs-toggle="collapse" href="#edit-{{message.id}}">
+                Muokkaa otsikkoa?
+            </a>
+            <form id="edit-{{message.id}}" class="collapse row" action="{{ url_for('edit_title', id=message.id) }}"
+                  method="POST">
+                <div class="col">
+                    <textarea name="title" rows="5" cols="50">{{message.title}}</textarea>
+                </div>
+                <div class="col">
+                    <input type="submit" value="Lähetä"/>
+                </div>
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            </form>
+            {%endif%}
+        </div>
+        <hr/>
+        {% endfor %}
     </div>
-    <div class="col">
-        <input type="submit" value="Lähetä"/>
+    {%if freeze|length != 0 %}
+    <p class="h2">Valmiit keskustelut: {{freeze_cnt}}</p>
+    {%for messages in freeze%}
+    <div class="row">
+        <div class="col-2">
+            <div>Otsikko: </div>
+            <div>Aika: </div>
+        </div>
+        <div class="col">
+            <div>{{messages.title}}</div>
+            <div>{{ messages.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}</div>
+            <a href="{{ url_for('get_frozen_mes', id=messages.id) }}">Avaa</a>
+            {%if messages.user_id == session.user_id or session.user_role== 2 %}
+            <form action="{{ url_for('remove_chain', id=messages.id) }}" method="POST">
+                <button>
+                    <input type="submit" value="poista ketju"/>
+                </button>
+            </form>
+            {%endif%}
+        </div>
+        {%endfor%}
+        {%endif%}
     </div>
-</form>
-{%endif%}
-<hr>
-{% endfor %}
-{%if freeze|length != 0 %}
-Valmiit keskustelut: {{freeze_cnt}}
-<p></p>
-{%for messages in freeze%}
-<i>Otsikko: </i>{{messages.title}}
-<p></p>
-<i>Aika:</i> {{ messages.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
-<p></p>
-<a href="{{ url_for('get_frozen_mes', id=messages.id) }}">Avaa</a>
-{%if messages.user_id == session.user_id or session.user_role== 2 %}
-<form action="{{ url_for('remove_chain', id=messages.id) }}" method="POST">
-    <button>
-        <input type="submit" value="poista ketju"/>
-    </button>
-</form>
-{%endif%}
-<p></p>
-{%endfor%}
-{%endif%}
-
-<a href="/newm">Uusi keskustelu</a>
-<br>
-<a href="http://127.0.0.1:5000/">Etusivulle</a>
+    <a href="/newm">Uusi keskustelu</a>
+    <br>
+    <a href="http://127.0.0.1:5000/">Etusivulle</a>
+</div>
 {% endblock %}

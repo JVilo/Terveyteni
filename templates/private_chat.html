@@ -1,23 +1,42 @@
 {% extends "layout.html" %}
 {% block content %}
-<hr>
-{%if user_role == 2%}
-{% for p in patients%}
-<i>Nimi: </i>{{ p[0] }}
-<a href="{{ url_for('get_doctor_private_chat', patient_id=p.id) }}">Keskustelu</a>
-<p></p>
+<div class="container">
+    {%if user_role == 2%}
+    {% for p in patients%}
+    <div class="row">
+        <div class="col-2">
+            <div>Nimi: </div>
+        </div>
+        <div class="col">
+        <div>{{ p[0] }}</div>
+        <a href="{{ url_for('get_doctor_private_chat', patient_id=p.id) }}">Keskustelu</a>
+        </div>
+    </div>
+    {%endfor%}
+    {%endif%}
 
-{%endfor%}{%endif%}
+    {%if user_role ==1%}
+    <div class="row">
+        <div class="col-2">
+            <div>Lääkärikeskustelut: </div>
+        </div>
+        <div class="col">
+        <div>{{length}}</div>
+        </div>
+        <div class="row">
 
-{%if user_role ==1%}
-<i>Sinulla on: {{length}} keskustelu </i>
-<p></p>
-{%for chat in lst%}
-<i>Otsikko: </i>{{chat.title}}
-<p></p>
-<a href="{{ url_for('show_chat_p', dr_id=chat.doctor_id) }}">Avaa keskustleu</a>
-{%endfor%}{%endif%}
-<p></p>
-<a href="http://127.0.0.1:5000/">Etusivulle</a>
-
+            {%for chat in lst%}
+            <div class="col-1">
+                <div>Otsikko:  </div>
+            </div>
+            <div class="col">
+                <div>{{chat.title}}</div>
+                <a href="{{ url_for('show_chat_p', dr_id=chat.doctor_id) }}">Avaa keskustleu</a>
+            </div>
+            {%endfor%}
+        </div>
+        </div>
+    {%endif%}
+    <a href="http://127.0.0.1:5000/">Etusivulle</a>
+</div>
 {% endblock %}

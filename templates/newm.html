@@ -1,14 +1,21 @@
+{% extends "layout.html" %}
 {% block content %}
-<p class="error-message">{{ message }}</p>
-<form action="{{ url_for('new_message') }}" method="post">
-Otsikko:<br>
-<textarea name="title" rows="1" cols="20"></textarea>
-<br>
-Viesti: <br>
-<textarea name="content" rows="3" cols="30"></textarea>
-<br>
-<input type="submit" value="Lähetä">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-</form>
-<a href="/messages">Viestit</a>
+<div class="container">
+    <div class="row">
+        <div class="col-2">
+            <form action="{{ url_for('new_message') }}" method="post">
+                Otsikko:<br>
+                <textarea name="title" rows="1" cols="20" minlength="3" maxlength="20" oninvalid= "alert('otsikon pitää olla vähintään 3 merkkiä ja enintään 20 merkkiä pitkä.');" required></textarea>
+                <br>
+                Viesti: <br>
+                <textarea name="content" rows="5" cols="40" minlength="3" maxlength="1000" oninvalid= "alert('viestin pitää olla vähintään 3 merkkiä ja enintään 1000 merkkiä pitkä.');" required></textarea>
+                <br>
+                <input type="submit" value="Lähetä">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            </form>
+        </div>
+    </div>
+    <a href="/messages">Viestit</a>
+</div>
+
 {% endblock %}

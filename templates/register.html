@@ -4,22 +4,45 @@
 <h2>Rekisteröinti</h2>
 <p class="error-message">{{ message }}</p>
 
-<form action="/register" method="post">
-Tunnus: <br><input type="text" name="username" minlength="1" maxlength="20">
-<p>
-Salasana: <br><input type="password" name="password1">
-<p>
-Salasana uudestaan: <br><input type="password" name="password2">
-<p>
+<form onSubmit="return checkPassword(this)" action="/register" method="post">
+Tunnus: <br><input type="text" name="username" id="username" minlength="2" maxlength="20" oninvalid="alert('käyttäjä tunnus tulee olla 2-20 merkkiä pitkä');"required>
+<p></p>
+
+
+Salasana: <br><input type="password" name="password1" minlength="3" maxlength="16" oninvalid="alert('salasanan tulee olla 3-16 merkkiä');" required>
+<p></p>
+Salasana uudestaan: <br><input type="password" name="password2" minlength="3" maxlength="16" oninvalid="alert('Vahvista salasana');" required>
+<p></p>
 Käyttäjärooli:
 <select name="role">
 <option value=1> Potilas
 <option value=2> Lääkäri
 </select>
 <p>
-<input type="submit" value="Luo tunnus">
+<input type="submit" value="Luo tunnus" id="submit" class="submit" >
 </form>
+    <script>
+        function checkPassword(form) {
+            password1 = form.password1.value;
+            password2 = form.password2.value;
 
+            if (password1 == '')
+                alert("Syötä salasana!");
+
+            else if (password2 == '')
+                alert("Vahvista salasana!");
+
+            else if (password1 != password2) {
+                alert("\nSalasana ei täsmää...")
+                return false;
+            }
+
+            else {
+                alert("Rekisteröinti onnistui")
+                return true;
+            }
+        }
+    </script>
 <p>
 <a href="/login">Palaa takaisin</a>
 
