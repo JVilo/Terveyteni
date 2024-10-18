@@ -2,14 +2,14 @@
 {% block content %}
 <hr>
 <h2>Lääkärikeskustelu</h2>
-{% if lst|length == 0 %}
+{% if lst|length == 0 and session.user_role== 2%}
 <p class="error-message">{{ message }}</p>
 <form action="{{ url_for('post_doctor_private_chat', patient_id=patient_id) }}" method="post">
     Otsikko:<br>
-    <textarea name="title" rows="1" cols="20"></textarea>
+    <textarea name="title" rows="2" cols="20" minlength="3" maxlength="20" required oninvalid="this.setCustomValidity('otsikon pitää olla vähintään 3 merkkiä ja enintään 20 merkkiä pitkä.')"></textarea>
     <br>
     Viesti: <br>
-    <textarea name="content" rows="3" cols="30"></textarea>
+    <textarea name="content" rows="5" cols="40" minlength="3" maxlength="1000" required oninvalid="this.setCustomValidity('viestin pitää olla vähintään 3 merkkiä ja enintään 1000 merkkiä pitkä.')"></textarea>
     <br>
     <input type="submit" value="Lähetä">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -20,6 +20,27 @@
 <i>Otsikko: </i>{{ content.title }}
 {%endif%}
 <p></p>
+{% if content.user_id == session.user_id or session.user_role== 2 %}
+<form action="{{ url_for('remove_piv', id=content.id, dr_id=content.doctor_id, patient_id=content.patient_id) }}" method="POST">
+    <button>
+        <input type="submit" value="poista"/>
+    </button>
+</form>
+<a class="btn btn-secondary" data-bs-toggle="collapse" href="#edit-{{content.id}}">
+    Muokkaa?
+</a>
+
+<form id="edit-{{content.id}}" class="collapse row" action="{{ url_for('edit_mes_priv', id=content.id,dr_id=content.doctor_id, patient_id=content.patient_id) }}"
+      method="POST">
+    <div class="col">
+        <textarea name="content" rows="5" cols="40" minlength="3" maxlength="1000" required oninvalid="this.setCustomValidity('viestin pitää olla vähintään 3 merkkiä ja enintään 1000 merkkiä pitkä.')">{{content.content}}</textarea>
+    </div>
+    <div class="col">
+        <input type="submit" value="Lähetä"/>
+    </div>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+</form>
+{%endif%}
 <i>Viesti: </i>{{content.content}}
 <p></p>
 <i>Lähetetty: </i>{{content.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
@@ -28,7 +49,7 @@
 {% endfor %}
 {% if lst|length != 0 %}
 <form action="{{ form_url }}" method="POST">
-    <textarea name="content" rows="3" cols="30"></textarea>
+    <textarea name="content" rows="5" cols="40" minlength="3" maxlength="1000" oninvalid="this.setCustomValidity('viestin pitää olla vähintään 3 merkkiä ja enintään 1000 merkkiä pitkä.')" required></textarea>
     <br>
     <input type="submit" value="Lähetä">
     <p></p>

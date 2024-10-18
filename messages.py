@@ -23,6 +23,19 @@ def get_list():
     result = db.session.execute((text(sql)))
     return result.fetchall()
 
+def lst_count():
+    sql = """
+        SELECT 
+            COUNT(M.title)
+            FROM messages M
+        WHERE
+            m.visible=1
+            AND m.ref_key IS NULL
+        """
+    result = db.session.execute((text(sql)))
+    result= result.fetchone()
+    return result[0]
+
 
 def send(title, content):
     user_id = users.user_id()
@@ -63,9 +76,21 @@ def remove_message(messages_id):
     db.session.execute((text(sql)), {"id": messages_id})
     db.session.commit()
 
+def remove_message_priv(messages_id):
+    print("poistuuko")
+    sql = "UPDATE private_messages SET visible = 0 WHERE id =:id"
+    db.session.execute((text(sql)), {"id": messages_id})
+    print("pitäisi poistua?")
+    db.session.commit()
+
 
 def edit_mes(message_id, content):
     sql = """UPDATE messages SET content=:content WHERE id=:message_id"""
+    db.session.execute((text(sql)), {"message_id": message_id, "content": content})
+    db.session.commit()
+
+def edit_mes_priv(message_id, content):
+    sql = """UPDATE private_messages SET content=:content WHERE id=:message_id"""
     db.session.execute((text(sql)), {"message_id": message_id, "content": content})
     db.session.commit()
 
@@ -141,6 +166,7 @@ def get_private_messages(patient_id, doctor_id) -> list[dict]:
         WHERE
             patient_id=:patient_id
             AND doctor_id=:doctor_id
+            AND pm.visible=1
     ORDER BY sent_at
     """
     return db.session.execute((text(sql)), {
@@ -164,6 +190,7 @@ def get_private_messages_p(user_id) -> list[dict]:
          ON u.id =pm.user_id
             WHERE 
                 pm.patient_id=:patient_id
+                AND pm.visible=1
         ORDER BY pm.sent_at
         """
     return db.session.execute((text(sql)), {
@@ -183,6 +210,7 @@ def get_priv_answ(patient_id,doctor_id):
                WHERE 
                    pm.patient_id=:patient_id
                    AND doctor_id=:doctor_id
+                   AND pm.visible=1
            ORDER BY pm.sent_at
            """
     return db.session.execute((text(sql)), {

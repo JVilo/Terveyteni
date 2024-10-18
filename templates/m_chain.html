@@ -14,20 +14,14 @@
                 {{parent.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
             </div>
             <div>{{parent.content}}</div>
-            {{ parent.user_id }} vs {{ session.user_id }}
             {% if parent.user_id == session.user_id %}
-            <form action="{{ url_for('remove', id=parent.id) }}" method="POST">
-                <button>
-                    <input type="submit" value="poista"/>
-                </button>
-            </form>
             <a class="btn btn-secondary" data-bs-toggle="collapse" href="#edit-{{parent.id}}">
                 Muokkaa?
             </a>
             <form id="edit-{{parent.id}}" class="collapse row" action="{{ url_for('edit_mes', id=parent.id) }}"
                   method="POST">
                 <div class="col">
-                    <textarea name="content" rows="3" cols="30">{{parent.content}}</textarea>
+                    <textarea name="content" rows="5" cols="40" minlength="3" maxlength="1000" required oninvalid="this.setCustomValidity('viestin pitää olla vähintään 3 merkkiä ja enintään 1000 merkkiä pitkä.')">{{parent.content}}</textarea>
                 </div>
                 <div class="col">
                     <input type="submit" value="Lähetä"/>
@@ -52,7 +46,7 @@
                 {{msg_chain.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
             </div>
             <div>{{msg_chain.content}}</div>
-            {% if msg_chain.user_id == session.user_id %}
+            {% if msg_chain.user_id == session.user_id or session.user_role== 2 %}
             <form action="{{ url_for('remove', id=msg_chain.id) }}" method="POST">
                 <button>
                     <input type="submit" value="poista"/>
@@ -64,7 +58,7 @@
             <form id="edit-{{msg_chain.id}}" class="collapse row" action="{{ url_for('edit_mes', id=msg_chain.id) }}"
                   method="POST">
                 <div class="col">
-                    <textarea name="content" rows="3" cols="30">{{msg_chain.content}}</textarea>
+                    <textarea name="content" rows="5" cols="40" minlength="3" maxlength="1000" required oninvalid="this.setCustomValidity('viestin pitää olla vähintään 3 merkkiä ja enintään 1000 merkkiä pitkä.')">{{msg_chain.content}}</textarea>
                 </div>
                 <div class="col">
                     <input type="submit" value="Lähetä"/>
@@ -82,10 +76,11 @@
             Vastaa:
         </p>
         <form action="{{ url_for('message_chain', id = parent.id) }}" method="POST">
-            <textarea name="content" rows="3" cols="30"></textarea>
+            <textarea name="content" rows="5" cols="40" minlength="3" maxlength="1000" required oninvalid="this.setCustomValidity('viestin pitää olla vähintään 3 merkkiä ja enintään 1000 merkkiä pitkä.')"></textarea>
             <br>
             <input type="submit" value="Lähetä">
             <p>
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
     </div>
     <a href="{{ url_for('list_messages') }}">edellinen sivu</a>

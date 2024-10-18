@@ -40,19 +40,8 @@ def register():
 
     if request.method == "POST":
         username = request.form["username"]
-        if len(username) < 1 or len(username) > 20:
-            error = "Tunnuksessa tulee olla 1-20 merkkiä"
-            return render_template("register.html", message=error)
 
         password1 = request.form["password1"]
-        password2 = request.form["password2"]
-
-        if password1 != password2:
-            error = "Salasanat eroavat"
-            return render_template("register.html", message=error)
-        if password1 == "":
-            error = "Salasana on tyhjä"
-            return render_template("register.html", message=error)
 
         role = request.form["role"]
         if role not in ("1", "2"):
@@ -78,6 +67,7 @@ def message_chain(id):
         )
 
     if "content" in request.form:
+        users.check_csrf()
         content = request.form["content"]
         ref_key = id
         if messages.answer_mes(content, ref_key):
@@ -88,30 +78,22 @@ def message_chain(id):
 def list_messages():
     if request.method == "GET":
         lst = messages.get_list()
-        return render_template("messages.html", count=len(lst), messages=lst)
+        cnt = messages.lst_count()
+        return render_template("messages.html", count=cnt, messages=lst)
 
 
 @app.route("/newm", methods=['POST', 'GET'])
 def new_message():
+
     if request.method == "GET":
         return render_template("newm.html")
 
-    users.check_csrf()
-    title = request.form["title"]
-    if title == "":
-        error = "otsikko ei voi olla tyhjä"
-        return render_template("newm.html", message=error)
-
-    content = request.form["content"]
-    if content == "":
-        error = "viesti ei voi olla tyhjä"
-        return render_template("newm.html", message=error)
-
-    if messages.send(title, content):
-        return redirect("/messages")
-    else:
-        error = "Viestin lähetys ei onnistunut"
-        return render_template("newm.html", message=error)
+    if request.method == "POST":
+        users.check_csrf()
+        title = request.form["title"]
+        content = request.form["content"]
+        if messages.send(title, content):
+            return redirect("/messages")
 
 
 @app.route("/m_chain/<id>", methods=["POST"])
@@ -123,7 +105,6 @@ def remove(id):
 
 @app.route("/messages/<id>/delete", methods=["POST"])
 def remove_chain(id):
-    print("tänne piti tulla")
     messages.remove_message(id)
     return redirect(url_for("list_messages"))
 
@@ -141,6 +122,7 @@ def edit_mes(id):
 
 @app.route("/m_chain/<id>/edit_title", methods=["POST"])
 def edit_title(id):
+    users.check_csrf()
     messages.edit_title(
         id,
         title=request.form["title"]
@@ -327,3 +309,72 @@ def show_chat_p(dr_id):
         patient_id = users.user_id()
         if messages.answer_private(content, doctor_id, patient_id):
             return redirect(url_for("show_chat_p", dr_id=dr_id))
+
+@app.route("/remove/private_chat_site/<dr_id>/<patient_id>/<id>", methods=["POST"])
+def remove_piv(id,dr_id,patient_id):
+    #dr_id =dr_id
+    messages.remove_message_priv(id)
+    if users.user_id() != dr_id:
+        users.require_role(1)
+        lst = messages.get_private_messages(
+            patient_id=users.user_id(),
+            doctor_id=dr_id
+        )
+        return render_template(
+            "private_chat_site.html",
+            lst=lst,
+            patient_id=users.user_id(),
+            form_url=url_for("show_chat_p", dr_id=dr_id),
+        )
+
+    else:
+        current_user_id = users.user_id()
+        private_messages = messages.get_private_messages(
+            patient_id=patient_id,
+            doctor_id=current_user_id
+        )
+
+        return render_template(
+            "private_chat_site.html",
+            lst=private_messages,
+            patient_id=patient_id,
+            form_url=url_for("get_doctor_private_chat", patient_id=patient_id),
+        )
+
+@app.route("/private_chat_site/<dr_id>/<patient_id>/<id>/edit", methods=["POST"])
+def edit_mes_priv(id,dr_id,patient_id):
+    users.check_csrf()
+    messages.edit_mes_priv(
+        id,
+        content=request.form['content']
+    )
+    if users.user_id() != dr_id:
+        users.require_role(1)
+        lst = messages.get_private_messages(
+            patient_id=users.user_id(),
+            doctor_id=dr_id
+        )
+
+        return render_template(
+            "private_chat_site.html",
+            lst=lst,
+            patient_id=users.user_id(),
+            form_url=url_for("show_chat_p", dr_id=dr_id),
+        )
+    else:
+        current_user_id = users.user_id()
+        private_messages = messages.get_private_messages(
+            patient_id=patient_id,
+            doctor_id=current_user_id
+        )
+
+        return render_template(
+            "private_chat_site.html",
+            lst=private_messages,
+            patient_id=patient_id,
+            form_url=url_for("get_doctor_private_chat", patient_id=patient_id),
+        )
+
+
+
+
