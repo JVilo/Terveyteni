@@ -19,7 +19,8 @@ Keskustelun voi aloittaa ja toinen käyttäjä voi vasttata siihen. Käyttäjä 
 ylläpitäjä/läääkäri voi aktivoida tehtävän bmi ja nähdä tuloksen. käyttäjä potilas voi täydentää tehtävän ja nähdä tuloksen. <br>
 Ylläpitäjä/lääkäri voi aloittaa yksityisen keskustelun potilaan kanssa joka näkyy ainoastaan lääkärin ja potilaan välillä.<br>
 Keskustelun voi kuitata valmiiksi/jäädyttää, jolloin keskustelu on edelleen luettavissa ja omia viestejä voi poistaa(ylläpitäjä voi poistaa kaikkia), mutta niihin ei voi vastata.<br>
-Lääkärin voi poistaa yksityis keskustelun kaikkia viestejä, potilas voi poistaa omia viestejä.
+Lääkärin voi poistaa yksityis keskustelun kaikkia viestejä paitsi ensimmäisen viestin, potilas voi poistaa omia viestejä.<br>
+Lääkäri voi kuitata yksityis keskustelun valmiiksi. Valmista keskustelua voi tarkistella jälkikäteen.
 
 ## sovelluksen käynnistäminen:
 1. Sovellusta voi testata ainoastaan paikallisesti omalla koneella.<br>

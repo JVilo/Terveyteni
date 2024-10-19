@@ -54,6 +54,8 @@
                     <input type="submit" value="poista"/>
                 </button>
             </form>
+            {%endif%}
+            {% if msg_chain.user_id == session.user_id%}
             <a class="btn btn-secondary" data-bs-toggle="collapse" href="#edit-{{msg_chain.id}}">
                 Muokkaa?
             </a>
@@ -85,7 +87,7 @@
         </form>
 
     </div>
-    {% if parent.user_id == session.user_id %}
+    {% if parent.user_id == session.user_id or session.user_role== 2 %}
     <form action="{{url_for('freeze_mes', id = parent.id)}}" method="POST">
         <input type="submit" value="kuittaa valmiiksi">
     </form>

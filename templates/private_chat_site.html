@@ -18,7 +18,7 @@
             </form>
         </div>
         {%endif%}
-
+        </div>
         {%for content in lst%}
         {%if content.title%}
         <div class="row">
@@ -41,30 +41,30 @@
                 <div>{{content.content}}</div>
                 <div>{{content.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}</div>
                 <div>{{content.name}}</div>
-            </div>
-            {% if content.user_id == session.user_id or session.user_role== 2 %}
-            {%if not content.title%}
-            <form action="{{ url_for('remove_piv', id=content.id, dr_id=content.doctor_id, patient_id=content.patient_id) }}" method="POST">
-                <button>
-                    <input type="submit" value="poista"/>
-                </button>
-            </form>
-            {%endif%}
-            <a class="btn btn-secondary" data-bs-toggle="collapse" href="#edit-{{content.id}}">
-                    Muokkaa?
-                </a>
-                <form id="edit-{{content.id}}" class="collapse row" action="{{ url_for('edit_mes_priv', id=content.id,dr_id=content.doctor_id, patient_id=content.patient_id) }}"
-                      method="POST">
-                    <div class="col">
-                        <textarea name="content" rows="5" cols="40" minlength="3" maxlength="1000" required oninvalid="this.setCustomValidity('viestin pitää olla vähintään 3 merkkiä ja enintään 1000 merkkiä pitkä.')">{{content.content}}</textarea>
-                    </div>
-                    <div class="col">
-                        <input type="submit" value="Lähetä"/>
-                    </div>
-                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                {% if content.user_id == session.user_id or session.user_role== 2 %}
+                {%if not content.title%}
+                <form action="{{ url_for('remove_piv', id=content.id, dr_id=content.doctor_id, patient_id=content.patient_id) }}" method="POST">
+                    <button>
+                        <input type="submit" value="poista"/>
+                    </button>
                 </form>
-            {%endif%}
+                {%endif%}
+                <a class="btn btn-secondary" data-bs-toggle="collapse" href="#edit-{{content.id}}">
+                        Muokkaa?
+                    </a>
+                    <form id="edit-{{content.id}}" class="collapse row" action="{{ url_for('edit_mes_priv', id=content.id,dr_id=content.doctor_id, patient_id=content.patient_id) }}"
+                          method="POST">
+                        <div class="col">
+                            <textarea name="content" rows="5" cols="40" minlength="3" maxlength="1000" required oninvalid="this.setCustomValidity('viestin pitää olla vähintään 3 merkkiä ja enintään 1000 merkkiä pitkä.')">{{content.content}}</textarea>
+                        </div>
+                        <div class="col-0.5">
+                            <input type="submit" value="Lähetä"/>
+                        </div>
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                    </form>
+                {%endif%}
             </div>
+        </div>
         {% endfor %}
 
         {% if lst|length != 0 %}
