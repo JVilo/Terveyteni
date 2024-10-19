@@ -33,6 +33,28 @@ def lst_count():
     result= result.fetchone()
     return result[0]
 
+def longest_mes(message_id) -> list[dict]:
+    sql="""
+        SELECT
+            max(length(content))
+            FROM messages
+        WHERE
+        id=:message_id
+        """
+    result=db.session.execute((text(sql)), {"message_id": message_id}).fetchone()
+    return result
+
+def longest_answers(parent_id) -> list[dict]:
+    sql = """
+        SELECT 
+            max(length(content))
+            FROM messages
+        WHERE 
+        ref_key=:parent_id
+        """
+    result = db.session.execute((text(sql)), {"parent_id": parent_id}).fetchone()
+    return result
+
 
 def send(title, content):
     user_id = users.user_id()
@@ -271,6 +293,7 @@ def send_private_message(title, content, doctor_id, patient_id):
     )
     db.session.commit()
     return True
+
 def answer_private(content,doctor_id, patient_id):
     user_id = users.user_id()
     sql = """
