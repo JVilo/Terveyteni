@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <p class="h2">Lääkärikeskustelu</p>
+
+        {%for content in lst%}
+        {%if content.title%}
+        <div class="row">
+            <div class="col-1">
+                <div>Otsikko: </div>
+            </div>
+            <div class="col">
+                <div>{{ content.title }}</div>
+            </div>
+        </div>
+        {%endif%}
+
+        <div class="row">
+            <div class="col-1">
+                <div>Viesti: </div>
+                <div>Lähetetty: </div>
+                <div>Lähetäjä: </div>
+            </div>
+            <div class="col">
+                <div>{{content.content}}</div>
+                <div>{{content.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}</div>
+                <div>{{content.name}}</div>
+            </div>
+            </div>
+        {% endfor %}
+        <a href="http://127.0.0.1:5000/">Etusivulle</a>
+        </div>
+    </div>
+{% endblock %}

@@ -202,7 +202,7 @@ def edit_title(id, title) -> list[dict]:
     db.session.commit()
 
 
-def get_private_messages(patient_id, doctor_id) -> list[dict]:
+def get_private_messages(patient_id, doctor_id,visible_status: int = 1) -> list[dict]:
     sql = """
     SELECT
         pm.id, 
@@ -219,15 +219,16 @@ def get_private_messages(patient_id, doctor_id) -> list[dict]:
         WHERE
             patient_id=:patient_id
             AND doctor_id=:doctor_id
-            AND pm.visible=1
+            AND pm.visible=:visible_status
     ORDER BY sent_at
     """
     return db.session.execute((text(sql)), {
         "patient_id": patient_id,
-        "doctor_id": doctor_id
+        "doctor_id": doctor_id,
+        "visible_status": visible_status
     }).fetchall()
 
-def get_private_messages_p(user_id) -> list[dict]:
+def get_private_messages_p(user_id,visible_status: int = 1) -> list[dict]:
     sql = """
         SELECT
             pm.id, 
@@ -243,11 +244,34 @@ def get_private_messages_p(user_id) -> list[dict]:
          ON u.id =pm.user_id
             WHERE 
                 pm.patient_id=:patient_id
-                AND pm.visible=1
+                AND pm.visible=:visible_status
         ORDER BY pm.sent_at
         """
     return db.session.execute((text(sql)), {
-        "patient_id":user_id,
+        "patient_id":user_id,"visible_status": visible_status
+    }).fetchall()
+
+def get_private_messages_d(user_id,visible_status: int = 1) -> list[dict]:
+    sql = """
+        SELECT
+            pm.id, 
+            pm.title, 
+            pm.content, 
+            pm.sent_at,
+            pm.patient_id,
+            pm.doctor_id,
+            u.name,
+            pm.user_id
+        FROM private_messages pm
+         LEFT JOIN users u
+         ON u.id =pm.user_id
+            WHERE 
+                pm.doctor_id=:doctor_id
+                AND pm.visible=:visible_status
+        ORDER BY pm.sent_at
+        """
+    return db.session.execute((text(sql)), {
+        "doctor_id":user_id,"visible_status": visible_status
     }).fetchall()
 
 def get_priv_answ(patient_id,doctor_id):
@@ -294,11 +318,11 @@ def send_private_message(title, content, doctor_id, patient_id):
     db.session.commit()
     return True
 
-def answer_private(content,doctor_id, patient_id):
+def answer_private(content,doctor_id, patient_id,ref_key):
     user_id = users.user_id()
     sql = """
-        INSERT INTO private_messages (content, user_id, sent_at, visible,doctor_id,patient_id) 
-            VALUES (:content, :user_id, NOW(), :visible,:doctor_id,:patient_id )
+        INSERT INTO private_messages (content, user_id, sent_at, visible,doctor_id,patient_id,ref_key) 
+            VALUES (:content, :user_id, NOW(), :visible,:doctor_id,:patient_id,:ref_key )
         """
     db.session.execute(
         (text(sql)),
@@ -307,6 +331,16 @@ def answer_private(content,doctor_id, patient_id):
             "user_id": user_id,
             "visible": 1,
             "doctor_id":doctor_id,
-            "patient_id":patient_id})
+            "patient_id":patient_id,
+            "ref_key":ref_key})
     db.session.commit()
     return True
+
+def end_priv_mes(id):
+    sql = """UPDATE 
+                private_messages  
+            SET visible = 2 
+            WHERE id =:id
+            OR ref_key=:id"""
+    db.session.execute((text(sql)), {"id":id})
+    db.session.commit()
