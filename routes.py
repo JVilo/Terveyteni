@@ -5,6 +5,7 @@ from app import app
 import users
 import messages
 import tasks
+from messages import longest_answers
 
 
 @app.route("/")
@@ -23,7 +24,7 @@ def login():
 
         if not users.login(username, password):
             error = "Väärä tunnus tai salasana"
-            return render_template("login.html", message=error)
+            return render_template("login.html", message=error, username=username)
         return redirect("/")
 
 
@@ -40,6 +41,16 @@ def register():
 
     if request.method == "POST":
         username = request.form["username"]
+        user = users.user_name()
+        names =[]
+        for name in user:
+            name =','.join(name)
+            names.append(name)
+
+        if username in names:
+            error= "käyttäjätunnus on jo käytössä"
+            print(error)
+            return render_template("register.html", message=error,username=username)
 
         password1 = request.form["password1"]
 
@@ -50,20 +61,26 @@ def register():
 
         if not users.register(username, password1, role):
             error = "Rekisteröinti ei onnistunut"
-            return render_template("error.html", message=error)
+            return render_template("register.html", message=error,username=username)
         return redirect("/")
 
 
 @app.route("/messages/<id>", methods=["GET", "POST"])
 def message_chain(id):
     if request.method == 'GET':
+        longest_mes = messages.longest_mes(id)
+        print(longest_mes[0])
+        longest_answers = messages.longest_answers(id)
+        print(longest_answers[0])
+        longest_ms = max(longest_answers[0],longest_mes[0])
         parent = messages.get_message(id)
         ms = messages.get_answers(id)
         return render_template(
             "m_chain.html",
             parent=parent,
             ms=ms,
-            count=len(ms)
+            count=len(ms)+1,
+            longest= longest_ms
         )
 
     if "content" in request.form:

@@ -23,6 +23,16 @@ def logout():
     del session["user_name"]
     del session["user_role"]
 
+def user_name():
+    sql = """
+        SELECT
+        name
+        FROM
+        users
+        """
+    result = db.session.execute((text(sql))).fetchall()
+    return result
+
 def register(name, password, role):
     hash_value = generate_password_hash(password)
     try:

@@ -5,7 +5,7 @@
 <p class="error-message">{{ message }}</p>
 
 <form onSubmit="return checkPassword(this)" action="/register" method="post">
-Tunnus: <br><input type="text" name="username" id="username" minlength="2" maxlength="20" oninvalid="alert('käyttäjä tunnus tulee olla 2-20 merkkiä pitkä');"required>
+Tunnus: <br><input type="text" value="{{username}}" name="username" id="username" minlength="2" maxlength="20" oninvalid="alert('käyttäjä tunnus tulee olla 2-20 merkkiä pitkä');"required>
 <p></p>
 
 
@@ -35,11 +35,6 @@ Käyttäjärooli:
             else if (password1 != password2) {
                 alert("\nSalasana ei täsmää...")
                 return false;
-            }
-
-            else {
-                alert("Rekisteröinti onnistui")
-                return true;
             }
         }
     </script>
