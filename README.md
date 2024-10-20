@@ -1,6 +1,6 @@
 # Terveyteni
 
-Sovelluksessa voi keskustella terveydenhuollon kanssa ja saada tehtäviä/määräyksiä terveyden hoitoon liittyen.
+Sovelluksessa voi keskustella terveydenhuollon kanssa ja saada tehtäviä/määräyksiä hoitoon liittyen.
 
 - Käyttäjä voi kirjautua sisään ja ulos sekä luoda uuden tunnuksen. 
 - Käyttäjä näkee sovelluksen etusivulla listan alueista missä hänellä on oikeus käydä.
@@ -25,15 +25,19 @@ Lääkäri voi kuitata yksityis keskustelun valmiiksi. Valmista keskustelua voi 
 ## sovelluksen käynnistäminen:
 1. Sovellusta voi testata ainoastaan paikallisesti omalla koneella.<br>
 <br>
-2. requirements.txt tiedostosta löytyy tarvittavat riippuvuudet, jotka on syytä asentaa.<br>
+2. Kloonaa tämä repositorio omalle koneellesi ja siirry sen juurikansioon<br>
 <br>
-3. db.py tiedostosta löytyy kohta -- app.config["SQLALCHEMY_DATABASE_URI"] , johon osoitteeksi kannattaa laittaa itselleen omaan tietokantaan sopiva osoite.<br>
+3. Luo kansioon .env johon luot DATABASE_URL=<tietokannan-paikallinen-osoite> ja SECRET_KEY=<salainen-avain><br>
 <br>
-4. SECRET_KEY on syytä muodostaa .env tiedostoon. esim. mallia SECRET_KEY=123, muuten ei kirjautuminen onnistu.<br>
+4. db.py tiedostosta löytyy kohta -- app.config["SQLALCHEMY_DATABASE_URI"] , johon osoitteeksi kannattaa laittaa itselleen omaan tietokantaan sopiva osoite.<br>
+<br>
+5. Seuraavaksi aktivoi virtuaaliympäristö komennolla "python3 -m venv venv" sitten aja "source venv/bin/activate" ja komennolla "pip install -r ./requirements.txt" asennatt tarvittavat riippuvuudet.<br>
+<br>
+6. SECRET_KEY on syytä muodostaa .env tiedostoon. esim. mallia SECRET_KEY=123, muuten ei kirjautuminen onnistu.<br>
    (Itse olen käyttänyt sovelluksen tekoon dockeria jolloin bd.py tiedostossa on myös osa joka luo minulle sql taulukot automaattisesti. Dockerin pitäisi käynnistyä komennolla: docker compose up -d.
 db.py koodi rivit 11-20 ovat turhia jos käytät koneelle asennettua psql tietokantaa.)<br>
 <br>
-5. Luo taulukot psqllään schema.sql tiedostosta.<br>
+7. Määritä vielä tietokannan skeema komennolla "psql < schema.sql"<br>
 <br>
-6. Flask run pitäisi käynnistää sovelluksen.<br>
+8. Flask run pitäisi käynnistää sovelluksen.<br>
 
