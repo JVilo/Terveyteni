@@ -69,9 +69,7 @@ def register():
 def message_chain(id):
     if request.method == 'GET':
         longest_mes = messages.longest_mes(id)
-        print(longest_mes[0])
         longest_answers = messages.longest_answers(id)
-        print(longest_answers[0])
         longest_ms = max(longest_answers[0],longest_mes[0])
         parent = messages.get_message(id)
         ms = messages.get_answers(id)

@@ -2,16 +2,22 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <p class="h2">Keskustelijen määrä: {{count }}</p>
+        <p class="h2">Keskustelujen määrä: {{count }}</p>
         {% for message in messages %}
         <div class="row">
         <div class="col-2">
             <div>Otsikko: </div>
             <div>Aika: </div>
+            <div>Vastauksia:</div>
+            <div>viestin keskipituus: </div>
         </div>
         <div class="col">
-        <div>{{ message[0] }}</div>
-        <div>{{ message[3].strftime("%Y-%m-%d %H:%M:%S") }}</div>
+            <div>{{ message[0] }}</div>
+            <div>{{ message[3].strftime("%Y-%m-%d %H:%M:%S") }}</div>
+            <div>{{ message.ans_count }}</div>
+            <div>{{"%.2f" %message.avg_len}}</div>
+        </div>
+
             <a href="{{ url_for('message_chain', id=message.id) }}">Avaa viestiketju</a>
             {%if message.user_id == session.user_id or session.user_role== 2 %}
             <form action="{{ url_for('remove_chain', id=message.id) }}" method="POST">
@@ -33,6 +39,7 @@
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             </form>
             {%endif%}
+
         </div>
         <hr/>
         {% endfor %}

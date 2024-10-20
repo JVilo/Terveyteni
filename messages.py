@@ -11,7 +11,9 @@ def get_list():
             U.name, 
             M.sent_at, 
             M.id,
-            M.user_id
+            M.user_id,
+            (SELECT COUNT(*) FROM messages ans WHERE ans.ref_key = M.id OR ans.id = M.id) as ans_count,
+            (SELECT AVG(length(content)) FROM messages ans WHERE ans.ref_key = M.id OR ans.id = M.id) as avg_len
         FROM messages M, users U 
         WHERE M.user_id=U.id 
             AND m.visible=1
@@ -121,7 +123,6 @@ def get_mes(message_id) -> list[dict]:
             """
     result = db.session.execute((text(sql)), {"message_id": message_id}).fetchall()
     return result
-
 
 def get_message(message_id, visible_status: int = 1) -> list[dict]:
     sql = """
