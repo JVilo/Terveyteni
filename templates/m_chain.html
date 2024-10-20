@@ -3,12 +3,12 @@
 <div class="container">
     <div class="row">
         <p class="h2">{{ parent.title }}</p>
-        <p> viestien määrä: {{count}}</p><p> pisin viesti: {{longest}} merkkiä</p>
+        <p> viestien määrä: {{count}}</p><p> Pisin viesti: {{longest}} merkkiä</p>
 
         <div class="col-2">
             <div>Lähettäjä: </div>
             <div>Aika: </div>
-            <div>viesti: </div>
+            <div>Viesti: </div>
         </div>
         <div class="col">
             <div>{{ parent.name }}</div>
@@ -40,7 +40,7 @@
         <div class="col-2">
             <div>Lähettäjä: </div>
             <div>Aika: </div>
-            <div>viesti: </div>
+            <div>Viesti: </div>
         </div>
         <div class="col">
             <div>{{ msg_chain.name }}</div>
@@ -51,7 +51,7 @@
             {% if msg_chain.user_id == session.user_id or session.user_role== 2 %}
             <form action="{{ url_for('remove', id=msg_chain.id) }}" method="POST">
                 <button>
-                    <input type="submit" value="poista"/>
+                    <input type="submit" value="Poista"/>
                 </button>
             </form>
             {%endif%}
@@ -92,7 +92,7 @@
         <input type="submit" value="kuittaa valmiiksi">
     </form>
     {%endif%}
-    <a href="{{ url_for('list_messages') }}">edellinen sivu</a>
+    <a href="{{ url_for('list_messages') }}">Edellinen sivu</a>
 </div>
 
 {%endblock%}

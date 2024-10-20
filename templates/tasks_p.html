@@ -9,13 +9,13 @@
 
 <p>Täytä paino (kg) ja pituus (cm)</p>
 
-<input type="number"  name="weight" min="1" max="500"> paino pyöristettynä, ei pilkkuja <br>
-<input type="number"  name="height" min="1" max="300"> pituus pyöristettynä, ei pilkkuja <br>
+<input type="number"  name="weight" min="1" max="500"> Paino pyöristettynä, ei pilkkuja <br>
+<input type="number"  name="height" min="1" max="300"> Pituus pyöristettynä, ei pilkkuja <br>
 
 <input type="submit" value="Lähetä">
 {%endif%}
 {%if data == 0%}
-sinulla ei ole aktiivista tehtävää.
+Sinulla ei ole aktiivista tehtävää.
 {% endif %}
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>

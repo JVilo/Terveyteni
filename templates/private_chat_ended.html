@@ -2,16 +2,16 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <p class="h2">Lääkärikeskustelu</p>
+        <p class="h2">Suljettukeskustelu</p>
 
         {%for content in lst%}
         {%if content.title%}
         <div class="row">
             <div class="col-1">
-                <div>Otsikko: </div>
+                <div  class="h5">Otsikko: </div>
             </div>
             <div class="col">
-                <div>{{ content.title }}</div>
+                <div class="h5">{{ content.title }}</div>
             </div>
         </div>
         {%endif%}
@@ -28,8 +28,9 @@
                 <div>{{content.name}}</div>
             </div>
             </div>
+        <hr>
         {% endfor %}
-        <a href="http://127.0.0.1:5000/">Etusivulle</a>
-        </div>
     </div>
+</div>
+<a href="http://127.0.0.1:5000/">Etusivulle</a>
 {% endblock %}

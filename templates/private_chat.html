@@ -1,21 +1,25 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
+    <div class="row">
     {%if user_role == 2%}
+    <p class="h4">Keskustele potilaan kanssa:</p>
     {% for p in patients%}
     <div class="row">
         <div class="col-2">
-            <div>Nimi: </div>
+            <div class="h6">Nimi: </div>
         </div>
         <div class="col">
-        <div>{{ p[0] }}</div>
-        <a href="{{ url_for('get_doctor_private_chat', patient_id=p.id) }}">Keskustelu</a>
+            <div class="h6">{{ p[0] }}</div>
+            <a href="{{ url_for('get_doctor_private_chat', patient_id=p.id) }}">Keskustelu</a>
         </div>
+        <hr>
     </div>
     {%endfor%}
-    <div>Suljetut keskustelut; </div>
+    <div class="h4">Suljetut keskustelut: </div>
     {%for chat in ended%}
     {%if chat.title%}
+    <div class="row">
     <div class="col-2">
         <div>Otsikko:  </div>
     </div>
@@ -23,45 +27,48 @@
         <div>{{chat.title}}</div>
         <a href="{{ url_for('show_chat_ended_d', patient_id=chat.patient_id) }}">katsele</a>
     </div>
+    <hr>
     {%endif%}
     {%endfor%}
     {%endif%}
+    </div>
 </div>
-
     {%if user_role ==1%}
     <div class="row">
         <div class="col-2">
-            <div>Lääkärikeskustelut: </div>
+            <div class="h4">Lääkärikeskustelut: </div>
         </div>
         <div class="col">
-        <div>{{length}}</div>
+        <div class="h4">{{length}}</div>
         </div>
         <div class="row">
-
             {%for chat in lst%}
             <div class="col-1">
-                <div>Otsikko:  </div>
+                <div class="h6">Otsikko:  </div>
             </div>
             <div class="col">
-                <div>{{chat.title}}</div>
+                <div class="h6">{{chat.title}}</div>
                 <a href="{{ url_for('show_chat_p', dr_id=chat.doctor_id) }}">Avaa keskustleu</a>
             </div>
+            <hr>
             {%endfor%}
-            <div>Suljetut keskustelut</div>
+            <div class="h4">Suljetut keskustelut</div>
             {%for chat in ended%}
             {%if chat.title%}
             <div class="col-1">
-                <div>Otsikko:  </div>
+                <div class="h6">Otsikko:  </div>
             </div>
             <div class="col">
-                <div>{{chat.title}}</div>
-                <a href="{{ url_for('show_chat_ended_p', dr_id=chat.doctor_id) }}">katsele</a>
+                <div class="h6">{{chat.title}}</div>
+                <a href="{{ url_for('show_chat_ended_p', dr_id=chat.doctor_id) }}">Katsele</a>
                 {%endif%}
             </div>
             {%endfor%}
+            <hr>
         </div>
-        </div>
+    </div>
     {%endif%}
-    <a href="http://127.0.0.1:5000/">Etusivulle</a>
 </div>
+</div>
+<a href="http://127.0.0.1:5000/">Etusivulle</a>
 {% endblock %}

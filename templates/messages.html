@@ -5,29 +5,34 @@
         <p class="h2">Keskustelujen määrä: {{count }}</p>
         {% for message in messages %}
         <div class="row">
-        <div class="col-2">
-            <div>Otsikko: </div>
-            <div>Aika: </div>
-            <div>Vastauksia:</div>
-            <div>viestin keskipituus: </div>
-        </div>
-        <div class="col">
-            <div>{{ message[0] }}</div>
-            <div>{{ message[3].strftime("%Y-%m-%d %H:%M:%S") }}</div>
-            <div>{{ message.ans_count }}</div>
-            <div>{{"%.2f" %message.avg_len}}</div>
-        </div>
-
-            <a href="{{ url_for('message_chain', id=message.id) }}">Avaa viestiketju</a>
+            <div class="col-2">
+                <div>Otsikko:</div>
+                <div>Aika:</div>
+                <div>Vastauksia:</div>
+                <div>Viestin keskipituus:</div>
+            </div>
+            <div class="col">
+                <div>{{ message[0] }}</div>
+                <div>{{ message[3].strftime("%Y-%m-%d %H:%M:%S") }}</div>
+                <div>{{ message.ans_count }}</div>
+                <div>{{"%.2f" %message.avg_len}}</div>
+            </div>
+            <div class="position-relative">
+            <a href="{{ url_for('message_chain', id=message.id) }}" >Avaa viestiketju</a>
+            </div>
             {%if message.user_id == session.user_id or session.user_role== 2 %}
             <form action="{{ url_for('remove_chain', id=message.id) }}" method="POST">
-                <button>
-                    <input type="submit" value="poista ketju"/>
+                <div class="position-relative">
+                <button class="btn">
+                    <input type="submit" value="Poista ketju"/>
                 </button>
+                </div>
             </form>
+            <div class="position-relative">
             <a class="btn btn-secondary" data-bs-toggle="collapse" href="#edit-{{message.id}}">
                 Muokkaa otsikkoa?
             </a>
+            </div>
             <form id="edit-{{message.id}}" class="collapse row" action="{{ url_for('edit_title', id=message.id) }}"
                   method="POST">
                 <div class="col">
@@ -44,29 +49,36 @@
         <hr/>
         {% endfor %}
     </div>
+
     {%if freeze|length != 0 %}
-    <p class="h2">Valmiit keskustelut: {{freeze_cnt}}</p>
-    {%for messages in freeze%}
+
     <div class="row">
-        <div class="col-2">
-            <div>Otsikko: </div>
-            <div>Aika: </div>
-        </div>
-        <div class="col">
-            <div>{{messages.title}}</div>
-            <div>{{ messages.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}</div>
+        <p class="h2">Valmiit keskustelut: {{freeze_cnt}}</p>
+        {%for messages in freeze%}
+        <div class="row">
+            <div class="col-2">
+                <div>Otsikko:</div>
+                <div>Aika:</div>
+            </div>
+            <div class="col">
+                <div>{{messages.title}}</div>
+                <div>{{ messages.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}</div>
+            </div>
+            <div class="col">
+                {%if messages.user_id == session.user_id or session.user_role== 2 %}
+                <form action="{{ url_for('remove_chain', id=messages.id) }}" method="POST">
+                    <button>
+                        <input type="submit" value="Poista ketju"/>
+                    </button>
+                </form>
+                {%endif%}
+            </div>
             <a href="{{ url_for('get_frozen_mes', id=messages.id) }}">Avaa</a>
-            {%if messages.user_id == session.user_id or session.user_role== 2 %}
-            <form action="{{ url_for('remove_chain', id=messages.id) }}" method="POST">
-                <button>
-                    <input type="submit" value="poista ketju"/>
-                </button>
-            </form>
-            {%endif%}
         </div>
+        <hr/>
         {%endfor%}
-        {%endif%}
     </div>
+    {%endif%}
     <a href="/newm">Uusi keskustelu</a>
     <br>
     <a href="http://127.0.0.1:5000/">Etusivulle</a>

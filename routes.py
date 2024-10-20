@@ -70,7 +70,7 @@ def message_chain(id):
     if request.method == 'GET':
         longest_mes = messages.longest_mes(id)
         longest_answers = messages.longest_answers(id)
-        longest_ms = max(longest_answers[0],longest_mes[0])
+        longest_ms = max(longest_answers[0]or 0,longest_mes[0] or 0)
         parent = messages.get_message(id)
         ms = messages.get_answers(id)
         return render_template(

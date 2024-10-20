@@ -1,35 +1,35 @@
 {% extends "layout.html" %}
 {% block content %}
+<div class="container">
+    <div class="row">
+        <p class="h2">Etusivu</p>
+        <div class="row">
+            {% if session.user_id %}
+            <p>Olet kirjautunut sisään nimellä <b>{{ session.user_name }}</b>.</p>
 
-<h2>Etusivu</h2>
+            {% else %}
+            <p>Et ole kirjautunut sisään.</p>
+            <a href="/login">Kirjaudu sisään</a>
+            {% endif %}
+            {% if session.user_role == 1 %}
+            <p class="h4">Potilaan toiminnot:</p>
+            <ul>
+                <li> <a href="/tasks_p">Tehtävät</a>
+                <li> <a href="/messages">Viestit</a>
+                <li> <a href="{{url_for('private_chat_list_dr') }}"> Viesti lääkäriltä</a>
+            </ul>
+            {% endif %}
+            {% if session.user_role == 2 %}
+            <a href="/messages">Viestit</a>
+            <p class="h4">Lääkärin toiminnot:</p>
+            <ul>
+                <li> <a href="/tasks">Tee uusi tehtävä</a>
+                <li> <a href="{{ url_for('private_chat_list_dr') }}">Potilas viestit</a>
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
-{% if session.user_id %}
-Olet kirjautunut sisään nimellä <b>{{ session.user_name }}</b>. <a href="/logout">Kirjaudu ulos</a>
-{% else %}
-Et ole kirjautunut sisään. <a href="/login">Kirjaudu sisään</a>|
-{% endif %}
-<p>
 
-{% if session.user_role == 1 %}
-<h3>Potilaan toiminnot</h3>
-<ul>
-<li> <a href="/tasks_p">Tehtävät</a>
-<li> <a href="/messages">viestit</a>
-<li> <a href="{{url_for('private_chat_list_dr') }}"> viesti lääkäriltä</a>
-</ul>
-
-{% endif %}
-
-
-{% if session.user_role == 2 %}
-<p></p>
-<a href="/messages">viestit</a>
-<p></p>
-<h3>Lääkärin toiminnot</h3>
-<ul>
-<li> <a href="/tasks">Tee uusi tehtävä</a>
-<li> <a href="{{ url_for('private_chat_list_dr') }}">Potilas viestit</a>
-</ul>
-
-{% endif %}
 {% endblock %}
